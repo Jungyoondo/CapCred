@@ -2,10 +2,16 @@
 
 신용캐드(대안 신용평가) → dintel × 신용캐드 → 사업 재설계(10-25) → 정보공개서 에이전트 검정(10-25 밤) → CapCred(10-26)까지, 사업 코드·문서·제출물을 건드린 커밋을 최신순으로 적었다. 가설은 결과 전에 등록한 커밋(Pre-register ...)과 결과 커밋이 따로 있다.
 
-커밋 85개
+커밋 91개
 
 | 날짜 | 커밋 | 내용 |
 |---|---|---|
+| 2026-10-26 | `ac60528` | Deliverables updated with AE and AF: report test table adds H-2026-10-AE, plan marks the FY2026 seal (334 brands, scoring 2027-10-31) and the FTC industry baseline as done, baseline recipe row mentions national rates, tally 14 tests / 38 hypotheses (19/14/5) in report, brief, README and motion graph |
+| 2026-10-26 | `b6cf653` | H-2026-10-AF sealed: FY2026 FDD Seoul store-count estimates for 334 exact-matched food brands (9-month permit change, 53 alerts: 21 up / 32 down), brands as SHA-256 of normalized names, file hash in scoreboard/caed_fdd_ledger.csv, scoring 2027-10-31; real-name map kept local |
+| 2026-10-26 | `9909a38` | H-2026-10-AE result: Seoul permit franchise close-rate rank vs FTC national industry rates rejected (-0.02; Seoul cafes close more, Seoul Korean-food less than national), open-rate rank holds (0.55), 2019->2024 close-rate direction 5/5 (all rising) -> reports carry the national baseline, Seoul measu |
+| 2026-10-26 | `6b00f50` | caed.ftc_frcs induty: fetch data.go.kr 15157660 (FTC industry franchise counts and open/close rates, approved 10-26; required param jngBizCrtrYr) for base years 2017-2025 -> data/caed/ftc/induty_opcl.csv (135 rows, 15 industries per year) |
+| 2026-10-26 | `0cedea2` | Business tick 10-26 02:53: roadmap B status (CapCred, concierge prototype, AC/AB2/AD, deliverables done, public repo, stock queue paused), submission plan records the 10-26 user decisions, research scan (HKU live LLM trading spread supports rule-based decision core; 2028 FDD reform makes store count |
+| 2026-10-26 | `0cb526f` | Report: pseudonymize the request example in the pipeline box (B브랜드) |
 | 2026-10-26 | `20d6361` | CapCred upload bundle: PROCESS_LOG.md (business commits since 2026-09), business-only hypotheses, brand names stripped from ftc_frcs_v2 result and the report appendix example |
 | 2026-10-26 | `2605359` | Name fixed as CapCred (Capacity + Credibility; Compliance Agent for Public-data Checks, Records, Evidence & Documents): report rebuilt as capcred_business_report.pdf, motion graphic re-rendered (59.5 s, TTS reads 캡크레드); AI film remade as a character story 'A씨의 4월' (61.3 s): an office worker at a sma |
 | 2026-10-26 | `0516a73` | Submission bundle for Daeri: report/videos/screens/brief/candidates/results, earlier sinyongcaed and dintel material moved to history/, new README; number audit extended to the Daeri report, motion script, film script and brief (12 new claims: AC error -16.8%, 5.54->4.60, alert precision 83.2%, 879  |

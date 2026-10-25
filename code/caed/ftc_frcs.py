@@ -4,6 +4,9 @@ python -X utf8 -m caed.ftc_frcs fetch    # -> data/caed/ftc/frcs_<기준년도>.
 python -X utf8 -m caed.ftc_frcs test     # AB1~AB3 -> data/caed/FTC_FRCS.txt, ftc_frcs.json
 python -X utf8 -m caed.ftc_frcs test --v2  # H-2026-10-AB2 엄격 매칭(외식·이름 정확 일치) -> FTC_FRCS.txt, ftc_frcs_v2.json
 python -X utf8 -m caed.ftc_frcs prefill  # H-2026-10-AC 에이전트 사전 채움(작년 신고 x 실측 증감률) vs 작년 복사 -> FTC_FRCS.txt, ftc_frcs_prefill.json
+python -X utf8 -m caed.ftc_frcs induty   # data.go.kr 15157660 업종별 가맹점 수·개폐점률 -> data/caed/ftc/induty_opcl.csv
+python -X utf8 -m caed.ftc_frcs induty_test   # H-2026-10-AE 서울 실측 vs 전국 업종 개·폐점률 -> FTC_FRCS.txt, ftc_frcs_induty.json
+python -X utf8 -m caed.ftc_frcs seal   # H-2026-10-AF 2026 회계년도 예상값 봉인 -> scoreboard/caed_fdd_2026-10-26.csv, caed_fdd_ledger.csv
 
 출처: data.go.kr 15125490 '공정거래위원회_가맹정보_브랜드 가맹점 및 직영점정보 제공 서비스'
   getbrandFrcsDmsstus2 - 기준년도·브랜드관리번호·회계년도·업종·지역명·가맹점수·직영점수·전체가맹점직영점수.
@@ -57,6 +60,120 @@ def fetch():
             page += 1
         pd.DataFrame(rows).to_csv(path, index=False, encoding="utf-8")
         print(f"ftc frcs {y}: {len(rows):,} rows")
+
+
+INDUTY_URL = "https://apis.data.go.kr/1130000/FftcIndutyFrcsCntOpclStatsService/getIndutyFrcsCntOpclStats"
+
+
+def fetch_induty():
+    """data.go.kr 15157660 업종별 가맹점 수·개폐점률(10-26 승인) -> data/caed/ftc/induty_opcl.csv. 필수 변수 이름은 jngBizCrtrYr."""
+    import requests
+    key, rows = F._key(), []
+    for y in range(2017, pd.Timestamp.now().year + 1):
+        r = requests.get(INDUTY_URL, params={"serviceKey": key, "pageNo": 1, "numOfRows": 500, "resultType": "json", "jngBizCrtrYr": str(y)}, timeout=60).json()
+        items = r.get("items") or []
+        items = items.get("item", items) if isinstance(items, dict) else items
+        rows += items if isinstance(items, list) else [items]
+        print(f"induty {y}: {r.get('resultCode')} {len(items) if isinstance(items, list) else 1} rows")
+    path = os.path.join(OUT, "induty_opcl.csv")
+    pd.DataFrame(rows).to_csv(path, index=False, encoding="utf-8")
+    print("->", path, len(rows))
+
+
+def induty_test():
+    """H-2026-10-AE: 서울 인허가 가맹점 개·폐점률(업종 중분류 x 회계년도) vs 공정위 전국 업종 개·폐점률(15157660)."""
+    from caed import fdd_agent as A
+    nat = pd.read_csv(os.path.join(OUT, "induty_opcl.csv"))
+    nat = nat[nat["tpbizLclsfNm"] == "외식"].sort_values("jngBizCrtrYr").drop_duplicates(["acntgYr", "tpbizMclsfNm"], keep="last")
+    ftc = F.load()
+    ftc = ftc[ftc["indutyLclasNm"] == "외식"].sort_values("yr")
+    ind = ftc.drop_duplicates("key", keep="last").set_index("key")["indutyMlsfcNm"]
+    parts = []
+    for code in ("072404", "072405"):
+        g = A.stores(code)
+        g = g[g["brand_raw"].notna()].copy()
+        g["key"] = g["brand_raw"].map(F.norm)
+        g = g[g["key"].isin(ind.index)].copy()
+        g["tr_close"] = g["tr_open"] = False
+        for _, b in g.groupby("brand_raw"):
+            tc, tr = A.transfers(b)
+            g.loc[list(tc), "tr_close"] = True
+            g.loc[list(tr), "tr_open"] = True
+        parts.append(g[["key", "open", "close", "gone", "failed", "tr_close", "tr_open"]])
+    G = pd.concat(parts, ignore_index=True)
+    G["ind"] = G["key"].map(ind)
+    rows = []
+    for y in sorted(nat["acntgYr"].unique()):
+        t0, t1 = pd.Timestamp(f"{y - 1}-12-31"), pd.Timestamp(f"{y}-12-31")
+        for c, h in G.groupby("ind"):
+            n = nat[(nat["acntgYr"] == y) & (nat["tpbizMclsfNm"] == c)]
+            start = int(((h["open"] <= t0) & ~(h["gone"] & (h["close"] <= t0))).sum())
+            if n.empty or start < 100:
+                continue
+            cl = int((h["failed"] & (h["close"] > t0) & (h["close"] <= t1) & ~h["tr_close"]).sum())
+            op = int(((h["open"] > t0) & (h["open"] <= t1) & ~h["tr_open"]).sum())
+            rows.append({"fy": int(y), "ind": c, "start": start, "close_rt": cl / start * 100, "new_rt": op / start * 100,
+                         "nat_close": float(n["endCncltnRt"].iloc[0]), "nat_new": float(n["newFrcsRt"].iloc[0])})
+    P = pd.DataFrame(rows)
+    ae1 = float(P[["close_rt", "nat_close"]].corr(method="spearman").iloc[0, 1])
+    ae2 = float(P[["new_rt", "nat_new"]].corr(method="spearman").iloc[0, 1])
+    dirs = {}
+    for c, h in P.groupby("ind"):
+        h = h.set_index("fy")
+        if 2019 in h.index and 2024 in h.index:
+            dirs[c] = bool(np.sign(h.at[2024, "close_rt"] - h.at[2019, "close_rt"]) == np.sign(h.at[2024, "nat_close"] - h.at[2019, "nat_close"]))
+    ae3 = sum(dirs.values()) / len(dirs) if dirs else float("nan")
+    v = {"AE1": ae1 >= 0.5, "AE2": ae2 >= 0.5, "AE3": ae3 >= 0.75}
+    verdict = "서울 실측 개·폐점률을 전국 기준선 옆에 싣는다" if v["AE1"] and v["AE2"] else "전국 기준선만 싣고 서울 실측은 참고"
+    piv = P.pivot(index="fy", columns="ind", values="close_rt").round(1)
+    L = [f"\n##### H-2026-10-AE 서울 실측 vs 공정위 전국 업종 개·폐점률 {pd.Timestamp.now():%Y-%m-%d %H:%M} | 업종-연 {len(P)} (시작 100곳+)",
+         f"  AE1 폐점률 순위상관 {ae1:.2f} (>=0.5) -> {'성립' if v['AE1'] else '기각'}",
+         f"  AE2 개점률 순위상관 {ae2:.2f} (>=0.5) -> {'성립' if v['AE2'] else '기각'}",
+         f"  AE3 2019->2024 폐점률 방향 일치 {sum(dirs.values())}/{len(dirs)} {dirs} (>=3/4) -> {'성립' if v['AE3'] else '기각'}",
+         "  서울 실측 폐점률(%, 명의변경 추정 제외):\n" + "\n".join("    " + ln for ln in piv.to_string().splitlines()),
+         "  전국 종료(해지) 비율(%):\n" + "\n".join("    " + ln for ln in P.pivot(index="fy", columns="ind", values="nat_close").to_string().splitlines()),
+         f"  판정: {verdict}"]
+    txt = "\n".join(L)
+    print(txt)
+    with open(TXT, "a", encoding="utf-8") as fh:
+        fh.write(txt + "\n")
+    with open(JSN.replace(".json", "_induty.json"), "w", encoding="utf-8") as fh:
+        json.dump({"asof": f"{pd.Timestamp.now():%Y-%m-%d %H:%M}", "AE1": ae1, "AE2": ae2, "AE3": ae3, "dirs": dirs, "verdict": verdict,
+                   "cells": P.round(3).to_dict("records")}, fh, ensure_ascii=False, indent=1)
+
+
+def seal():
+    """H-2026-10-AF: 2026 회계년도 서울 매장 수 예상값 봉인 -> scoreboard/caed_fdd_2026-10-26.csv + caed_fdd_ledger.csv(해시), 실명표는 로컬."""
+    import hashlib
+    T0, T1 = pd.Timestamp("2025-12-31"), pd.Timestamp("2026-09-30")
+    fdd = load()
+    fdd = fdd[(fdd["indutyLclasNm"] == "외식") & (fdd["tot"] > 0) & (fdd["fy"] == 2025)]
+    fdd = fdd.merge(F.load()[["brandMnno", "key"]].drop_duplicates("brandMnno"), on="brandMnno").groupby("key")["n_fdd"].sum()
+    fdd = fdd[fdd >= MIN_STORES]
+    M = pd.concat([measured(c, [T0, T1]) for c in ("072405", "072404")]).groupby(level=0).sum()
+    m = {b: F.norm(b) for b in M.index if F.norm(b) in fdd.index}
+    M = M[M.index.isin(list(m))].copy()
+    M["key"] = M.index.map(m)
+    M = M.groupby("key").sum()
+    S = pd.DataFrame({"f2025": fdd.reindex(M.index), "m0": M[T0], "m1": M[T1]}).dropna()
+    S["est"] = (S["f2025"] * (1 + (S["m1"] - S["m0"]) / np.maximum(S["m0"], 5))).round(1)
+    S["alert"] = ((S["est"] - S["f2025"]).abs() >= np.maximum(3, 0.1 * S["f2025"])).astype(int)
+    S["dir"] = np.sign(S["est"] - S["f2025"]).astype(int)
+    S.index.name = "key"
+    sb = os.path.join(ROOT, "scoreboard")
+    name = "caed_fdd_2026-10-26.csv"
+    pub = S.reset_index()
+    pub.insert(0, "brand_sha256", pub["key"].map(lambda k: hashlib.sha256(k.encode("utf-8")).hexdigest()))
+    pub.drop(columns="key").sort_values("brand_sha256").to_csv(os.path.join(sb, name), index=False, encoding="utf-8")
+    pub[["brand_sha256", "key"]].to_csv(os.path.join(ROOT, "data", "caed", "agent", "seal_FY2026_names.csv"), index=False, encoding="utf-8-sig")
+    h = hashlib.sha256(open(os.path.join(sb, name), "rb").read()).hexdigest()
+    led = os.path.join(sb, "caed_fdd_ledger.csv")
+    new = not os.path.exists(led)
+    with open(led, "a", encoding="utf-8") as fh:
+        if new:
+            fh.write("sealed_at,file,n_brands,hypothesis,sha256,score_after\n")
+        fh.write(f"{pd.Timestamp.now():%Y-%m-%dT%H:%M:%S},{name},{len(S)},H-2026-10-AF,{h},2027-10-31\n")
+    print(f"sealed {len(S)} brands | alerts {int(S['alert'].sum())} (up {int(((S['alert'] == 1) & (S['dir'] > 0)).sum())}, down {int(((S['alert'] == 1) & (S['dir'] < 0)).sum())}) | sha256 {h[:16]}…")
 
 
 def load():
@@ -209,3 +326,12 @@ if __name__ == "__main__" and "test" in sys.argv:
 
 if __name__ == "__main__" and "prefill" in sys.argv:
     prefill()
+
+if __name__ == "__main__" and sys.argv[1:] == ["induty"]:
+    fetch_induty()
+
+if __name__ == "__main__" and "induty_test" in sys.argv:
+    induty_test()
+
+if __name__ == "__main__" and sys.argv[1:] == ["seal"]:
+    seal()

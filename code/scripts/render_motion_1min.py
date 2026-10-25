@@ -26,7 +26,8 @@ DOC = os.path.join(ROOT, "deliverables", "VIDEO_MOTION_1MIN.md")
 #   I1~3 기각3 | 헬스장 H1 성립, H2·H3 기각 | 상권 L1 기각, L2 성립 | 유령 G1·G3 성립, G2 기각 | 가맹 F1~3 성립 | 브랜드 B1·B1b 성립
 #   공정위 X1 성립, X2 판정불가, X3 기각 | 신규 가맹 N1~3 성립 | 코호트 P1~3 보류 | 양도 Z1 기각, Z2 업종별 엇갈림(보류로 셈)
 #   10-25 밤~10-26 추가: AB(v1·v2를 1건) AB1 기각·AB3 성립·AB2 기각 | AC1~3 성립 | AD1·AD2 기각
-TALLY = {"tests": 13, "hyp": 35, "ok": 17, "no": 13, "hold": 5}
+#   10-26 새벽: AE1 기각, AE2·AE3 성립
+TALLY = {"tests": 14, "hyp": 38, "ok": 19, "no": 14, "hold": 5}
 NAME = "CapCred"   # 10-26 확정(Capacity + Credibility) - 이름이 정해지면 여기만 바꾸고 다시 렌더
 R.FOOTER = f"{NAME} · 해야 하는 일을, 공공 기록으로 대신"
 

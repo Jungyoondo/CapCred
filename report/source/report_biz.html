@@ -74,7 +74,7 @@
       <div class="kpi"><b>30만 원 → 30초</b><span>정보공개서 변경 1건 대행비<br>vs 에이전트 초안 재료 생성</span></div>
       <div class="kpi v"><b>-16.8%</b><span>예상 매장 수 오차(작년 숫자 복사 대비)<br>879개 브랜드 · 7개 시즌 재현</span></div>
       <div class="kpi w"><b>83%</b><span>변동 경보가 실제 신고와<br>같은 방향(1,005건)</span></div>
-      <div class="kpi o"><b>35개</b><span>사전 등록 세부 가설<br>성립 17 · 기각 13 · 보류 5</span></div>
+      <div class="kpi o"><b>38개</b><span>사전 등록 세부 가설<br>성립 19 · 기각 14 · 보류 5</span></div>
     </div>
     <div class="meta">표시 규칙: <span class="tag">실측</span> 이 저장소 코드로 계산 <span class="tag chk">확인</span> 외부 공개 자료 <span class="tag est">추정</span> 검증 전 가정 ·
       브랜드는 공개물에서 모두 가명(A브랜드, B브랜드…)으로 쓴다 · CapCred = <b>Cap</b>acity(일을 맡아 해내는 역량) + <b>Cred</b>ibility(검정된 근거) — <b>C</b>ompliance <b>A</b>gent for <b>P</b>ublic-data <b>C</b>hecks, <b>R</b>ecords, <b>E</b>vidence &amp; <b>D</b>ocuments.</div>
@@ -126,7 +126,7 @@
   <tr><td>인근 가맹점 10곳 문서</td><td>가맹본부</td><td>예정지에서 가까운 같은 브랜드 10곳(상호·소재지·거리), 500m 안 출점 수</td><td class="num">26초</td><td>명단 대조·전화번호</td></tr>
   <tr><td>사업장 실재·이력 확인서</td><td>은행·보증기관·구매팀</td><td>인허가 상태·업력, 같은 자리 10년 교체 이력, 상가 목록 대조(참고), 법인이면 DART 재무</td><td class="num">6초</td><td>현장점검 여부 판단</td></tr>
   <tr><td>인허가 대장 정비 목록</td><td>구청</td><td>장부 영업 중인데 상가 목록에 없는 곳(오래된 순)</td><td class="num">4초</td><td>현장 확인·처분</td></tr>
-  <tr><td>동네 업종 기준선</td><td>창업자·컨설턴트·심사역</td><td>영업 중·12개월 개업·폐업, 첫해 폐업(양도 추정 뺀 값)</td><td class="num">1초</td><td>판단</td></tr>
+  <tr><td>동네 업종 기준선</td><td>창업자·컨설턴트·심사역</td><td>영업 중·12개월 개업·폐업, 첫해 폐업(양도 추정 뺀 값), 공정위 전국 업종 개·폐점률</td><td class="num">1초</td><td>판단</td></tr>
   <tr><td>회사 재무·공시 요약</td><td>구매·재무팀, 가맹희망자</td><td>매출·영업이익·자산·부채 3년, 최근 공시 링크</td><td class="num">1초</td><td>원문 확인</td></tr>
 </table>
 <p class="small">예: 동네 기준선에서 서울 카페의 '개업 첫해 폐업'은 45.0%로 보이지만, 같은 자리 즉시 재개업(양도·명의변경 추정)을 빼면 5.5%다 <span class="tag">실측</span>. 공공 기록을 그대로 옮기면 틀린 숫자가 나오는 곳을, 검정한 규칙으로 바로잡는 것이 사람 대신 하는 일의 핵심이다.</p>
@@ -178,11 +178,12 @@
   <tr><td>H-2026-10-AC</td><td>예상값이 작년 숫자 복사보다 올해 신고에 가깝나, 경보가 맞나</td><td><b>성립</b>: 오차 5.54 → 4.60곳(-16.8%), 증감 방향 82.9%, 경보 정밀도 83.2% (879개 브랜드, 3,131 브랜드-연)</td><td>리포트에 예상값·경보를 싣는다</td></tr>
   <tr><td>H-2026-10-AB·AB2</td><td>신고 매장 수와 인허가 실측이 같은가, 실측이 1년 앞서나</td><td>수준 <span class="no">기각</span>(순위상관 0.58, 실측은 신고의 약 2/3) · 방향 <b>성립</b>(0.61) · "1년 늦다" <span class="no">기각</span>(6.4%)</td><td>실측 숫자를 신고값으로 쓰지 않고 증감률만 쓴다. '1년 늦다' 문구 폐기</td></tr>
   <tr><td>H-2026-10-AD</td><td>장부 영업 중인데 상가 목록에 없는 곳이 이후 더 폐업하나</td><td><span class="no">기각</span>: 1.5배(기준 2배), 업종 2/4</td><td>대출 확인서의 해당 표시는 '참고·미검증'</td></tr>
+  <tr><td>H-2026-10-AE</td><td>서울 실측 가맹점 개·폐점률이 공정위 전국 업종 비율과 같이 움직이나</td><td>폐점률 순위 <span class="no">기각</span>(-0.02) · 개점률 <b>성립</b>(0.55) · 2019→2024 방향 5/5 일치</td><td>리포트에 전국 기준선만 싣고 서울 실측은 참고</td></tr>
   <tr><td>H-2026-10-Z</td><td>독립점 첫해 폐업 급증은 양도 착시인가</td><td>혼합: 카페는 상당 부분 착시(9.1→7.2%), 음식점은 실제 증가(5.4→8.8%)</td><td>명의변경 분리 규칙(10m, -30~+180일)</td></tr>
   <tr><td>H-2026-10-N</td><td>쇠퇴 브랜드에서 새로 연 가맹점이 더 빨리 닫나</td><td><b>성립</b>: 1년 안 폐업 카페 7.9배, 음식점 2.8배(2021~24)</td><td>브랜드 흐름을 리포트에 표시</td></tr>
   <tr><td>개별 가게 예측(I·L·S 계열)</td><td>업력·규모·상권으로 가게 하나의 폐업을 가려내나</td><td>대부분 <span class="no">기각</span>(AUC 0.56~0.62)</td><td>점수 판매 포기 → 에이전트로 전환</td></tr>
 </table>
-<p class="small">전체 집계: 사전 등록 검정 13건, 세부 가설 35개 — 성립 17 · 기각 13 · 보류 5 <span class="tag">실측</span>.</p>
+<p class="small">전체 집계: 사전 등록 검정 14건, 세부 가설 38개 — 성립 19 · 기각 14 · 보류 5. 여기에 실전 봉인 1건(H-2026-10-AF: 2026 회계년도 예상값, 334개 브랜드, 2027-10-31 채점) <span class="tag">실측</span>.</p>
 </section>
 
 <section class="page">
@@ -220,7 +221,8 @@
 <h2 style="margin-top:8mm;">7. 계획</h2>
 <table>
   <tr><th>시기</th><th>할 일</th><th>성공 기준</th></tr>
-  <tr><td>11월 1~2주</td><td>공정위 가맹점별 계약상태(15143694)·위치·재무(15143701) 활용신청, 2026 회계년도 예상값 봉인(2027-04-30 마감 시즌 채점용)</td><td>봉인 커밋, API 승인</td></tr>
+  <tr><td>10-26 완료</td><td>2026 회계년도 예상값 봉인(H-2026-10-AF, 334개 브랜드, 해시 원장 scoreboard/caed_fdd_ledger.csv) · 공정위 업종별 개폐점률(15157660) 연결</td><td>2027-10-31 공개 채점</td></tr>
+  <tr><td>11월 1~2주</td><td>공정위 페어데이터(가맹점별 계약상태·위치·재무) 가명처리 신청서 작성·신청</td><td>승인</td></tr>
   <tr><td>11월 3~4주</td><td>가맹거래사 무료 시범(가명 샘플 리포트), 소규모 본부 무료 진단 페이지 공개</td><td>응답 10건, 진단 신청 30건</td></tr>
   <tr><td>12월</td><td>LLM 접수(자연어 → 레시피) 연결, 상호금융 창구 1곳 확인서 시범</td><td>확인 시간 50% 단축 측정</td></tr>
   <tr><td>2027-01~04</td><td>정기변경 시즌 유료 운영, 봉인 예상값 공개 채점</td><td>유료 20건, 오차·경보 적중 공개</td></tr>
@@ -255,7 +257,7 @@
   <tr><td>유령 표시 검정(AD)</td><td><code>python -X utf8 -m caed.ghost_permits follow</code></td></tr>
   <tr><td>가설 기록</td><td><code>scoreboard/HYPOTHESES.md</code> (H-2026-10-N, Z, AB, AB2, AC, AD)</td></tr>
 </table>
-<p class="small">출처: 가맹사업법 제7·28조, 법제처 17-0355, 공정위 2025 가맹사업 현황(서울시 뉴스), 크몽 가맹거래사 공개 가격, 은행연합회 사후점검준칙 개정(쿠키뉴스 2026-06-30), Korea Times 2026-09-04(전 국민 AI 에이전트), PermitFlow 시리즈 B(Pulse 2.0), Osler Dash, ClearlyFDD, FRANdata. 세부 링크는 docs/business/BUSINESS_REBOOT_2026-10-25.md, AGENT_CANDIDATES_2026-10-26.md.</p>
+<p class="small">출처: 가맹사업법 제7·28조, 법제처 17-0355, 공정위 가맹사업 현황·가맹정보 API, 크몽 공개 가격, 사후점검준칙 개정(쿠키뉴스 2026-06-30), Korea Times 2026-09-04, PermitFlow·Osler·ClearlyFDD·FRANdata. 링크는 business/ 문서에.</p>
 </section>
 
 </body>

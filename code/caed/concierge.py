@@ -343,7 +343,26 @@ def r_baseline(s):
     R = pd.DataFrame(rows).drop_duplicates("지역")
     body = (f"# 동네 업종 기준선 — {s.get('gu') or '서울'} {IND_NM[code]} ({now:%Y-%m} 기준)\n\n" + md_table(R, list(R.columns))
             + "\n\n- 첫해 폐업에는 같은 자리 양도(명의변경)가 섞여 있다(H-2026-10-Z: 카페는 상당 부분 착시).\n")
+    N = national(NAT_IND.get(code, []))
+    if len(N):
+        body += ("\n## 전국 가맹점 기준선 (공정위 업종별 가맹점 수·개폐점률)\n" + md_table(N, list(N.columns))
+                 + "\n\n- 위 서울 숫자(인허가, 가맹·독립 모두)와 정의가 달라 직접 비교하지 않는다. 서울 가맹점 실측 폐점률은 전국과 추세 방향은 같고 업종 사이 순위는 다르다(H-2026-10-AE).\n")
     return body, {"rows": R.to_dict("records")}
+
+
+NAT_IND = {"072405": ["커피"], "072404": ["한식", "치킨", "분식", "기타 외식"]}
+
+
+@tool("공정위 업종별 개폐점률", "공정거래위원회 가맹정보 주요 업종별 가맹점 수·개폐점률(data.go.kr 15157660)")
+def national(inds):
+    p = os.path.join(ROOT, "data", "caed", "ftc", "induty_opcl.csv")
+    if not inds or not os.path.exists(p):
+        return pd.DataFrame()
+    n = pd.read_csv(p).sort_values("jngBizCrtrYr").drop_duplicates(["acntgYr", "tpbizMclsfNm"], keep="last")
+    n = n[n["tpbizMclsfNm"].isin(inds)]
+    n = n[n["acntgYr"] >= n["acntgYr"].max() - 2].sort_values(["tpbizMclsfNm", "acntgYr"])
+    return pd.DataFrame({"업종": n["tpbizMclsfNm"], "회계년도": n["acntgYr"], "전국 가맹점 수": n["frcsCnt"].map("{:,}".format),
+                         "신규 비율": n["newFrcsRt"].map("{:.1f}%".format), "종료(해지) 비율": n["endCncltnRt"].map("{:.1f}%".format)})
 
 
 @recipe("financials", "기업 구매·재무팀, 가맹 희망자", "회사 재무·공시 요약",

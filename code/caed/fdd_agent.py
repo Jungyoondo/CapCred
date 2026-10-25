@@ -9,6 +9,7 @@ python -X utf8 -m caed.fdd_agent --top 2                                        
   1) 마감일(회계년도 말 + 120일, 재무제표 작성 개인사업자 180일)
   2) 공정위 등록 이력(브랜드 목록 API)
   3) 서울 매장 변동(인허가 실측): 신규·폐업, 같은 자리(10m)·-30~+180일 같은 브랜드 재개업은 '명의변경 추정'으로 분리(H-2026-10-Z 정의)
+  4b) 같은 업종 전국 기준선(공정위 업종별 개폐점률 15157660) - 서울 실측은 참고(H-2026-10-AE)
   3b) 공정위 신고 지역별 매장 수(data.go.kr 15125490) + 올해 서울 예상값·변동 경보(작년 신고 x (1 + 인허가 증감률), H-2026-10-AC 성립:
       오차 -16.8%, 경보 정밀도 83.2%)
   4) 2028-01-01 시행 신설 항목(장기운영 비율·1/3년 생존율·폐점 평균 영업기간) 사전 계산 - caed.survival_audit 정의, 업종 가맹 평균과 비교
@@ -74,6 +75,25 @@ def disclosed(mnnos):
     d["fy"] = pd.to_numeric(d["acntgYr"], errors="coerce")
     d = d.sort_values("jngBizCrtraYr").drop_duplicates(["brandMnno", "fy", "areaNm"], keep="last")
     return d.pivot_table(index="fy", columns="areaNm", values="n", aggfunc="sum").fillna(0)
+
+
+def industry_baseline(hist, fy, n_closed, n_start):
+    """4b절 - 공정위 업종별 가맹점 수·개폐점률(data.go.kr 15157660)에서 이 브랜드 업종 중분류의 최근 3개 회계년도.
+    서울 실측 폐점률은 참고로만 붙인다(H-2026-10-AE: 업종 사이 폐점률 순위는 기각, 추세 방향은 일치)."""
+    p = os.path.join(ROOT, "data", "caed", "ftc", "induty_opcl.csv")
+    if not os.path.exists(p) or not len(hist):
+        return []
+    c = hist.sort_values("yr")["indutyMlsfcNm"].iloc[-1]
+    n = pd.read_csv(p).sort_values("jngBizCrtrYr").drop_duplicates(["acntgYr", "tpbizMclsfNm"], keep="last")
+    n = n[n["tpbizMclsfNm"] == c].sort_values("acntgYr").tail(3)
+    if n.empty:
+        return [f"## 4b. 같은 업종 전국 기준선", f"- 공정위 업종별 표에 '{c}' 중분류가 없습니다(주요 업종만 제공).", ""]
+    rows = [f"| {int(r.acntgYr)} | {int(r.frcsCnt):,} | {r.newFrcsRt:.1f}% | {r.endCncltnRt:.1f}% |" for r in n.itertuples()]
+    own = f"{n_closed / n_start:.1%}" if n_start else "-"
+    return [f"## 4b. 같은 업종 전국 기준선 — {c} (공정위 업종별 가맹점 수·개폐점률)",
+            "| 회계년도 | 전국 가맹점 수 | 신규 비율 | 종료(해지) 비율 |", "|---|---|---|---|", *rows, "",
+            f"- 참고: 이 브랜드의 {fy}년 서울 인허가 폐업 비율 {own}(폐업 {n_closed} / 연초 {n_start}, 명의변경 추정 제외). "
+            "서울 실측과 전국 비율은 업종 사이 수준이 달라(H-2026-10-AE 폐점률 순위 기각) 직접 비교하지 말고 추세만 본다.", ""]
 
 
 def survival_items(g, asof):
@@ -167,6 +187,7 @@ def report(brand, code, fy, g=None):
           "",
           "정의는 공정위 세부 산식 고시 전 우리 근사(caed/survival_audit.py). 코호트 10곳 미만이면 '-'. 생존율은 명의변경을 폐업으로 셀 수 있어 낮게 나올 수 있다.",
           "",
+          *industry_baseline(hist, fy, len(end_x), int(alive(t0).sum())),
           "## 5. 대조 체크리스트",
           f"- [ ] 본사 가맹점 명단의 {fy}년 신규·종료·해지와 3-1 명세를 대조한다(서울).",
           f"- [ ] 명의변경 추정 {len(end_t)}건이 실제 양도인지 확인한다(정보공개서에는 명의변경으로 적는다).",

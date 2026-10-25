@@ -1,0 +1,421 @@
+{
+ "asof": "2026-10-26 03:07",
+ "AE1": -0.01594307928883121,
+ "AE2": 0.5508563899868247,
+ "AE3": 1.0,
+ "dirs": {
+  "기타 외식": true,
+  "분식": true,
+  "치킨": true,
+  "커피": true,
+  "한식": true
+ },
+ "verdict": "전국 기준선만 싣고 서울 실측은 참고",
+ "cells": [
+  {
+   "fy": 2016,
+   "ind": "기타 외식",
+   "start": 1059,
+   "close_rt": 5.949,
+   "new_rt": 18.98,
+   "nat_close": 15.84,
+   "nat_new": 27.39
+  },
+  {
+   "fy": 2016,
+   "ind": "주점",
+   "start": 559,
+   "close_rt": 3.399,
+   "new_rt": 10.376,
+   "nat_close": 16.73,
+   "nat_new": 20.97
+  },
+  {
+   "fy": 2016,
+   "ind": "치킨",
+   "start": 1773,
+   "close_rt": 5.133,
+   "new_rt": 9.645,
+   "nat_close": 13.43,
+   "nat_new": 13.74
+  },
+  {
+   "fy": 2016,
+   "ind": "커피",
+   "start": 1483,
+   "close_rt": 10.856,
+   "new_rt": 17.06,
+   "nat_close": 10.83,
+   "nat_new": 22.19
+  },
+  {
+   "fy": 2016,
+   "ind": "한식",
+   "start": 1959,
+   "close_rt": 2.042,
+   "new_rt": 10.567,
+   "nat_close": 11.95,
+   "nat_new": 25.22
+  },
+  {
+   "fy": 2017,
+   "ind": "기타 외식",
+   "start": 1197,
+   "close_rt": 6.433,
+   "new_rt": 16.959,
+   "nat_close": 13.7,
+   "nat_new": 26.83
+  },
+  {
+   "fy": 2017,
+   "ind": "분식",
+   "start": 785,
+   "close_rt": 6.242,
+   "new_rt": 15.924,
+   "nat_close": 10.98,
+   "nat_new": 22.68
+  },
+  {
+   "fy": 2017,
+   "ind": "치킨",
+   "start": 1853,
+   "close_rt": 5.505,
+   "new_rt": 8.041,
+   "nat_close": 12.29,
+   "nat_new": 13.3
+  },
+  {
+   "fy": 2017,
+   "ind": "커피",
+   "start": 1575,
+   "close_rt": 11.238,
+   "new_rt": 19.365,
+   "nat_close": 10.74,
+   "nat_new": 19.86
+  },
+  {
+   "fy": 2017,
+   "ind": "한식",
+   "start": 2126,
+   "close_rt": 2.963,
+   "new_rt": 12.982,
+   "nat_close": 13.69,
+   "nat_new": 23.77
+  },
+  {
+   "fy": 2018,
+   "ind": "기타 외식",
+   "start": 1323,
+   "close_rt": 6.803,
+   "new_rt": 15.42,
+   "nat_close": 13.36,
+   "nat_new": 23.79
+  },
+  {
+   "fy": 2018,
+   "ind": "제과제빵",
+   "start": 274,
+   "close_rt": 11.679,
+   "new_rt": 28.832,
+   "nat_close": 9.22,
+   "nat_new": 13.14
+  },
+  {
+   "fy": 2018,
+   "ind": "치킨",
+   "start": 1900,
+   "close_rt": 5.421,
+   "new_rt": 8.053,
+   "nat_close": 11.6,
+   "nat_new": 15.6
+  },
+  {
+   "fy": 2018,
+   "ind": "커피",
+   "start": 1704,
+   "close_rt": 8.509,
+   "new_rt": 16.843,
+   "nat_close": 10.9,
+   "nat_new": 20.67
+  },
+  {
+   "fy": 2018,
+   "ind": "한식",
+   "start": 2339,
+   "close_rt": 3.249,
+   "new_rt": 12.142,
+   "nat_close": 12.45,
+   "nat_new": 24.6
+  },
+  {
+   "fy": 2019,
+   "ind": "기타 외식",
+   "start": 1437,
+   "close_rt": 8.072,
+   "new_rt": 15.658,
+   "nat_close": 14.71,
+   "nat_new": 27.31
+  },
+  {
+   "fy": 2019,
+   "ind": "분식",
+   "start": 932,
+   "close_rt": 7.618,
+   "new_rt": 21.03,
+   "nat_close": 11.26,
+   "nat_new": 26.41
+  },
+  {
+   "fy": 2019,
+   "ind": "치킨",
+   "start": 1950,
+   "close_rt": 6.205,
+   "new_rt": 12.821,
+   "nat_close": 11.27,
+   "nat_new": 16.61
+  },
+  {
+   "fy": 2019,
+   "ind": "커피",
+   "start": 1846,
+   "close_rt": 9.805,
+   "new_rt": 17.389,
+   "nat_close": 8.6,
+   "nat_new": 20.79
+  },
+  {
+   "fy": 2019,
+   "ind": "한식",
+   "start": 2547,
+   "close_rt": 4.829,
+   "new_rt": 15.508,
+   "nat_close": 13.41,
+   "nat_new": 29.4
+  },
+  {
+   "fy": 2020,
+   "ind": "기타 외식",
+   "start": 1546,
+   "close_rt": 7.956,
+   "new_rt": 18.499,
+   "nat_close": 15.51,
+   "nat_new": 26.44
+  },
+  {
+   "fy": 2020,
+   "ind": "분식",
+   "start": 1057,
+   "close_rt": 6.623,
+   "new_rt": 20.151,
+   "nat_close": 12.41,
+   "nat_new": 30.54
+  },
+  {
+   "fy": 2020,
+   "ind": "치킨",
+   "start": 2079,
+   "close_rt": 6.205,
+   "new_rt": 19.384,
+   "nat_close": 11.76,
+   "nat_new": 20.19
+  },
+  {
+   "fy": 2020,
+   "ind": "커피",
+   "start": 1986,
+   "close_rt": 10.524,
+   "new_rt": 16.717,
+   "nat_close": 7.89,
+   "nat_new": 23.82
+  },
+  {
+   "fy": 2020,
+   "ind": "한식",
+   "start": 2819,
+   "close_rt": 5.818,
+   "new_rt": 16.389,
+   "nat_close": 13.84,
+   "nat_new": 32.3
+  },
+  {
+   "fy": 2021,
+   "ind": "기타 외식",
+   "start": 1709,
+   "close_rt": 9.772,
+   "new_rt": 19.31,
+   "nat_close": 14.57,
+   "nat_new": 28.42
+  },
+  {
+   "fy": 2021,
+   "ind": "분식",
+   "start": 1200,
+   "close_rt": 9.917,
+   "new_rt": 21.667,
+   "nat_close": 15.19,
+   "nat_new": 31.74
+  },
+  {
+   "fy": 2021,
+   "ind": "치킨",
+   "start": 2353,
+   "close_rt": 9.307,
+   "new_rt": 15.3,
+   "nat_close": 14.0,
+   "nat_new": 18.03
+  },
+  {
+   "fy": 2021,
+   "ind": "커피",
+   "start": 2108,
+   "close_rt": 12.002,
+   "new_rt": 20.92,
+   "nat_close": 7.49,
+   "nat_new": 25.01
+  },
+  {
+   "fy": 2021,
+   "ind": "한식",
+   "start": 3117,
+   "close_rt": 7.186,
+   "new_rt": 16.971,
+   "nat_close": 14.69,
+   "nat_new": 34.31
+  },
+  {
+   "fy": 2022,
+   "ind": "기타 외식",
+   "start": 1872,
+   "close_rt": 10.524,
+   "new_rt": 14.423,
+   "nat_close": 18.3,
+   "nat_new": 25.96
+  },
+  {
+   "fy": 2022,
+   "ind": "분식",
+   "start": 1340,
+   "close_rt": 10.149,
+   "new_rt": 11.642,
+   "nat_close": 18.21,
+   "nat_new": 17.81
+  },
+  {
+   "fy": 2022,
+   "ind": "치킨",
+   "start": 2493,
+   "close_rt": 8.785,
+   "new_rt": 8.143,
+   "nat_close": 14.9,
+   "nat_new": 15.31
+  },
+  {
+   "fy": 2022,
+   "ind": "커피",
+   "start": 2297,
+   "close_rt": 10.971,
+   "new_rt": 17.588,
+   "nat_close": 9.81,
+   "nat_new": 24.31
+  },
+  {
+   "fy": 2022,
+   "ind": "한식",
+   "start": 3422,
+   "close_rt": 8.445,
+   "new_rt": 13.998,
+   "nat_close": 19.41,
+   "nat_new": 30.17
+  },
+  {
+   "fy": 2023,
+   "ind": "기타 외식",
+   "start": 1943,
+   "close_rt": 12.352,
+   "new_rt": 16.264,
+   "nat_close": 21.85,
+   "nat_new": 21.8
+  },
+  {
+   "fy": 2023,
+   "ind": "분식",
+   "start": 1359,
+   "close_rt": 12.215,
+   "new_rt": 11.921,
+   "nat_close": 19.28,
+   "nat_new": 15.18
+  },
+  {
+   "fy": 2023,
+   "ind": "치킨",
+   "start": 2478,
+   "close_rt": 10.129,
+   "new_rt": 9.08,
+   "nat_close": 12.04,
+   "nat_new": 13.49
+  },
+  {
+   "fy": 2023,
+   "ind": "커피",
+   "start": 2447,
+   "close_rt": 12.219,
+   "new_rt": 15.815,
+   "nat_close": 9.81,
+   "nat_new": 19.14
+  },
+  {
+   "fy": 2023,
+   "ind": "한식",
+   "start": 3612,
+   "close_rt": 9.496,
+   "new_rt": 18.715,
+   "nat_close": 18.96,
+   "nat_new": 31.78
+  },
+  {
+   "fy": 2024,
+   "ind": "기타 외식",
+   "start": 2018,
+   "close_rt": 12.686,
+   "new_rt": 15.312,
+   "nat_close": 21.02,
+   "nat_new": 16.87
+  },
+  {
+   "fy": 2024,
+   "ind": "분식",
+   "start": 1356,
+   "close_rt": 11.947,
+   "new_rt": 11.652,
+   "nat_close": 17.92,
+   "nat_new": 12.39
+  },
+  {
+   "fy": 2024,
+   "ind": "치킨",
+   "start": 2452,
+   "close_rt": 9.706,
+   "new_rt": 8.157,
+   "nat_close": 11.91,
+   "nat_new": 11.72
+  },
+  {
+   "fy": 2024,
+   "ind": "커피",
+   "start": 2535,
+   "close_rt": 11.913,
+   "new_rt": 14.477,
+   "nat_close": 9.31,
+   "nat_new": 16.5
+  },
+  {
+   "fy": 2024,
+   "ind": "한식",
+   "start": 3944,
+   "close_rt": 10.117,
+   "new_rt": 22.667,
+   "nat_close": 21.02,
+   "nat_new": 27.46
+  }
+ ]
+}

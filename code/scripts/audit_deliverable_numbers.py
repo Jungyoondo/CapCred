@@ -127,6 +127,8 @@ CLAIMS = [
     ("재현 경보 적중", lambda: f'{J("deliverables/business/agent_replay_public.json")["stats"]["alert_hit"] * 100:.0f}', "88", ["daeri", "brief"]),
     ("AB2 방향 반대 비율", lambda: pct(J("data/caed/ftc_frcs_v2.json")["AB2"]), "6.4", ["daeri", "brief"]),
     ("AD 유령 폐업 배수", lambda: f'{J("data/caed/ghost_permits_follow.json")["pooled"]["못 찾음"] / J("data/caed/ghost_permits_follow.json")["pooled"]["같은 이름"]:.1f}', "1.5", ["daeri", "brief"]),
+    ("실전 봉인 브랜드 수(AF)", lambda: txt("scoreboard/caed_fdd_ledger.csv").splitlines()[1].split(",")[2], "334", ["daeri", "brief"]),
+    ("AE 폐점률 순위상관", lambda: f'{J("data/caed/ftc_frcs_induty.json")["AE1"]:.2f}', "-0.02", ["daeri", "brief"]),
     ("소상공인 업소 수(CapCred)", lambda: f"{sum(r['n_firms'] for r in IND().values()):,}", "894,933", ["daeri", "f1"]),
 ]
 
