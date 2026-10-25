@@ -1,0 +1,12 @@
+##### DESK EVAL (rules from <=2021-11, measured 2022-01~) 10-06 15:17
+kosdaq: filings 95,043 on 1144 days, 1617 stocks | per 30-stock book/day: 1.5 filings, read 0.13
+  read share 8.2% (T1 5.1%, T2 3.1%)
+  down<=-15%: base rate 12.6% | caught in read set 12.9% | rate in read set 19.8% (lift x1.6) | T1 rate 21.7%
+  up>=+15%: base rate 11.0% | caught in read set 9.7% | rate in read set 13.1% (lift x1.2) | T1 rate 13.5%
+  top types among caught crashes: 유상증자결정 232, 전환사채권발행결정 190, 권리락 161, 타법인주식및출자증권취득결정 159, 조회공시요구에대한답변 128, 조회공시요구 126
+kospi_full: filings 73,580 on 1145 days, 774 stocks | per 30-stock book/day: 2.5 filings, read 0.11
+  read share 4.6% (T1 2.2%, T2 2.4%)
+  down<=-15%: base rate 6.1% | caught in read set 8.5% | rate in read set 11.4% (lift x1.9) | T1 rate 15.1%
+  up>=+15%: base rate 8.2% | caught in read set 5.2% | rate in read set 9.3% (lift x1.1) | T1 rate 9.6%
+  top types among caught crashes: 투자판단관련주요경영사항 122, 조회공시요구에대한답변 67, 조회공시요구 56, 유상증자결정 46, 전환사채권발행결정 32, 회사합병결정 16
+note: d20 = excess vs equal-weight market, from the trading day after filing. Sample = filing days only (crashes with no filing are not counted).

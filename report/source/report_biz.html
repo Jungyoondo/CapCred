@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>CapCred 사업 보고서</title>
+<style>
+  @page { size: A4; margin: 16mm 16mm 18mm 16mm; }
+  :root { --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --acc:#2563eb; --vio:#7c3aed; --warn:#dc2626; --ok:#059669; --gold:#b45309; --soft:#f3f6fb; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: var(--ink); font-size: 10.2pt; line-height: 1.62; margin: 0; word-break: keep-all; }
+  h1 { font-size: 21pt; margin: 0 0 4mm; letter-spacing: -0.5px; }
+  h2 { font-size: 15pt; margin: 0 0 3mm; padding-left: 3mm; border-left: 5px solid var(--acc); letter-spacing: -0.3px; }
+  h3 { font-size: 11.5pt; margin: 5mm 0 2mm; color: var(--acc); }
+  p { margin: 0 0 2.5mm; }
+  ul, ol { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1mm; }
+  .page { page-break-before: always; }
+  .tag { display: inline-block; font-size: 8pt; padding: 0.3mm 2mm; border-radius: 3mm; background: var(--soft); color: var(--acc); font-weight: 700; margin-right: 1.5mm; }
+  .tag.est { color: var(--gold); background: #fef3c7; }
+  .tag.chk { color: var(--vio); background: #ede9fe; }
+  table { width: 100%; border-collapse: collapse; margin: 2mm 0 4mm; font-size: 9pt; }
+  th, td { border-bottom: 1px solid var(--line); padding: 1.8mm 2mm; text-align: left; vertical-align: top; }
+  th { background: var(--soft); font-weight: 700; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  figure { margin: 3mm 0 5mm; }
+  figure { text-align: center; }
+  figure img { width: 88%; border: 1px solid var(--line); border-radius: 2mm; }
+  figure.s img { width: 66%; }
+  .two figure img { width: 100%; }
+  figcaption { text-align: left; }
+  figcaption { font-size: 8.5pt; color: var(--muted); margin-top: 1.2mm; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 4mm 0 5mm; }
+  .kpi { background: var(--soft); border-radius: 2.5mm; padding: 3.5mm; }
+  .kpi b { display: block; font-size: 19pt; color: var(--acc); line-height: 1.15; }
+  .kpi.w b { color: var(--warn); } .kpi.o b { color: var(--ok); } .kpi.v b { color: var(--vio); }
+  .kpi span { font-size: 8.3pt; color: var(--muted); display: block; margin-top: 1mm; }
+  .callout { background: #f0f7ff; border: 1px solid #c7dcfb; border-radius: 2.5mm; padding: 3.5mm 4mm; margin: 3mm 0 4mm; }
+  .callout.warn { background: #fff5f5; border-color: #fecaca; }
+  .pipe { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5mm; margin: 3mm 0 4mm; }
+  .pipe div { border: 1.5px solid var(--acc); border-radius: 2.5mm; padding: 3mm; font-size: 8.8pt; position: relative; min-height: 30mm; }
+  .pipe div b { display: block; color: var(--acc); font-size: 10.5pt; margin-bottom: 1mm; }
+  .pipe div:nth-child(3) { border-color: var(--vio); } .pipe div:nth-child(3) b { color: var(--vio); }
+  .pipe div:nth-child(4) { border-color: var(--ok); } .pipe div:nth-child(4) b { color: var(--ok); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .steps { counter-reset: s; list-style: none; padding: 0; }
+  .steps li { counter-increment: s; padding: 2mm 0 2mm 10mm; position: relative; border-bottom: 1px dashed var(--line); }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 2mm; width: 6.5mm; height: 6.5mm; border-radius: 50%; background: var(--acc); color: #fff; font-weight: 700; font-size: 8.5pt; text-align: center; line-height: 6.5mm; }
+  .cover { height: 260mm; display: flex; flex-direction: column; justify-content: space-between; padding: 18mm 4mm 6mm; }
+  .cover .kicker { color: var(--acc); font-weight: 700; letter-spacing: 1px; font-size: 10pt; }
+  .cover h1 { font-size: 34pt; line-height: 1.2; margin: 5mm 0 7mm; }
+  .cover .lead { font-size: 15pt; line-height: 1.55; color: #1f2937; }
+  .cover .lead em { font-style: normal; color: var(--acc); font-weight: 700; }
+  .cover .meta { font-size: 10pt; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4mm; }
+  .toc { columns: 2; font-size: 10pt; }
+  .small { font-size: 8.5pt; color: var(--muted); }
+  .src a { color: var(--acc); text-decoration: none; word-break: break-all; }
+  .no { color: var(--warn); font-weight: 700; }
+</style>
+</head>
+<body>
+<!-- 사업 보고서 본문 (2026-10-26, 묶음 그림). scripts/build_report_pdf.py --biz 가 report.html의 <style>과 합쳐 report_biz.html -> PDF로 만든다. 이름은 CapCred(10-26 확정). -->
+<section class="cover">
+  <div>
+    <div class="kicker">2026 2학기 · 사업 보고서 · 2026-10-26</div>
+    <h1>CapCred<br>해야 하는 일을, 공공 기록으로 대신</h1>
+    <p class="lead">"이래서 이걸 해 줘" 한 줄이면,<br>에이전트가 <em>공공데이터와 재무제표</em>로 결과물을 만들고<br>사람은 <em>확인하고 서명만</em> 합니다.</p>
+    <p style="margin-top:10mm;font-size:11pt;color:#374151;">첫 제품은 프랜차이즈 본부가 해마다 4월 말까지 고쳐 내야 하는 <b>정보공개서</b>다. 지금은 가맹거래사에게 건당 30만 원을 주고 5~10일을 기다린다.
+      우리는 서울 인허가 89만 곳의 개업·폐업 기록과 공정위 가맹정보 139만 행으로 그 숫자를 미리 채우고, 바뀔 곳을 짚는다. 같은 엔진으로 은행의 대출 사후점검, 구청의 인허가 대장 정비,
+      창업 상담의 동네 기준선까지 <b>누군가 해야 하는 일</b>을 대신한다. 함께 내는 <b>1분 모션그래픽</b>(어떻게 시험했나)과 <b>1분 AI 영화</b>(누구의 일을 대신하나)의 본편이다.</p>
+  </div>
+  <div>
+    <div class="kpis">
+      <div class="kpi"><b>30만 원 → 30초</b><span>정보공개서 변경 1건 대행비<br>vs 에이전트 초안 재료 생성</span></div>
+      <div class="kpi v"><b>-16.8%</b><span>예상 매장 수 오차(작년 숫자 복사 대비)<br>879개 브랜드 · 7개 시즌 재현</span></div>
+      <div class="kpi w"><b>83%</b><span>변동 경보가 실제 신고와<br>같은 방향(1,005건)</span></div>
+      <div class="kpi o"><b>35개</b><span>사전 등록 세부 가설<br>성립 17 · 기각 13 · 보류 5</span></div>
+    </div>
+    <div class="meta">표시 규칙: <span class="tag">실측</span> 이 저장소 코드로 계산 <span class="tag chk">확인</span> 외부 공개 자료 <span class="tag est">추정</span> 검증 전 가정 ·
+      브랜드는 공개물에서 모두 가명(A브랜드, B브랜드…)으로 쓴다 · CapCred = <b>Cap</b>acity(일을 맡아 해내는 역량) + <b>Cred</b>ibility(검정된 근거) — <b>C</b>ompliance <b>A</b>gent for <b>P</b>ublic-data <b>C</b>hecks, <b>R</b>ecords, <b>E</b>vidence &amp; <b>D</b>ocuments.</div>
+  </div>
+</section>
+
+<section class="page">
+<h2>0. 한눈에 보기</h2>
+<table>
+  <tr><th style="width:22%">질문</th><th>답</th></tr>
+  <tr><td>누구의 어떤 일</td><td>자영업자·가맹본부·금융기관·관청에는 <b>기한과 제재가 붙은 확인·서류 업무</b>가 있다. 정보공개서 정기변경(사업연도 말 + 120일, 과태료 최대 1천만 원), 가맹희망자에게 주는 인근 가맹점 10곳 문서, 개인사업자 대출 사후점검(2026-07-30부터 5천만 원 초과로 확대), 폐업 미신고 업소 정리. 자료는 공공에 다 있지만 흩어져 있어 <b>사람이 손으로 모은다</b>.</td></tr>
+  <tr><td>해결</td><td><b>CapCred</b>: 요청 한 줄 → 할 일(레시피) 고르기 → 저장된 공공데이터·DART 재무제표 도구 실행 → 결과물과 작업 기록 → 사람이 확인·서명. 지금 레시피 6개, 도구 6종이 동작한다 <span class="tag">실측</span>.</td></tr>
+  <tr><td>첫 제품</td><td><b>정보공개서 정기변경 에이전트</b> — 가맹거래사 대행 변경 1건 30~33만 원·5~10일 <span class="tag chk">확인</span>을 초안 재료 30초 + 사람 검토로 바꾼다. 연 약 1만 1천 개 등록 브랜드가 대상이다 <span class="tag">실측</span>.</td></tr>
+  <tr><td>근거(시험)</td><td>사전 등록 검정 H-2026-10-AC: 에이전트가 미리 채운 서울 매장 수가 작년 숫자 복사보다 오차 16.8% 작고, 경보의 83.2%가 실제 신고와 같은 방향(외식 879개 브랜드, 2019~2025) <span class="tag">실측</span>. 지난 시즌 재현에서는 경보 적중 88%.</td></tr>
+  <tr><td>기각도 공개</td><td>"정보공개서는 1년 늦다"(6.4% &lt; 10%), "장부와 상가 목록의 불일치가 폐업을 미리 안다"(1.5배 &lt; 2배)는 기각했고, 기각된 기능은 제품에서 '참고'로 낮췄다.</td></tr>
+  <tr><td>누가 돈을 내나</td><td>가맹거래사·소규모 본부(건당 10만 원 안팎 또는 월 구독) → 금융기관(건당 확인서) → 지자체(실증 사업) <span class="tag est">추정</span>.</td></tr>
+  <tr><td>하지 않는 것</td><td>정보공개서 작성 자문·등록 대행(등록 가맹거래사 업무), 신용점수, 행정 처분. 결과물은 '초안 재료·확인 자료'이고 서명은 사람이 한다.</td></tr>
+</table>
+<div class="callout"><b>방향 전환을 숨기지 않는다.</b> 처음 이름은 '신용캐드' — 소상공인을 위한 대안 신용평가였다. 서울 89만 곳으로 검증하자 공개 데이터로 가게 하나의 폐업을 가려내는 힘은 약했고(업종별 AUC 0.56~0.62), 대회에서는 "신용평가의 기본부터"라는 평가를 받았다. 그래서 점수를 파는 대신, 같은 데이터로 <b>사람이 해야 하는 일을 대신하는 에이전트</b>로 바꿨다. 쌓아 둔 검증 결과(브랜드 흐름, 양도 착시, 장부와 실측의 차이)는 그대로 에이전트의 판단 규칙이 됐다.</div>
+</section>
+
+<section class="page">
+<h2>1. 문제: 해야 하는데, 사람 손으로 하는 일</h2>
+<table>
+  <tr><th>누가</th><th>해야 하는 일</th><th>근거·기한</th><th>지금 드는 비용·시간</th></tr>
+  <tr><td>가맹본부·가맹거래사</td><td>정보공개서 정기변경(지역별 가맹점 수, 신규·종료·해지·명의변경, 재무)</td><td>사업연도 말 + 120일(대개 4/30), 과태료 최대 1천만 원. 2028-01-01부터 중요 항목 분기 변경·생존율 신설 <span class="tag chk">확인</span></td><td>대행 변경 1건 30~33만 원, 5~10일 <span class="tag chk">확인</span>. 등록 브랜드 연 약 1.1만 개 <span class="tag">실측</span></td></tr>
+  <tr><td>가맹본부</td><td>가맹희망자마다 예정지 인근 가맹점 10곳 문서</td><td>가맹사업법 제7조. 안 주면 계약·가맹금 수령 금지, 시정명령 사례 <span class="tag chk">확인</span></td><td>본부 직원 수작업</td></tr>
+  <tr><td>은행·상호금융</td><td>개인사업자 대출 사후점검(사업장 실재·용도)</td><td>사후점검준칙 개정 2026-07-30: 개인사업자 5천만 원 초과, 적발 시 신규 대출 제한 3년 <span class="tag chk">확인</span></td><td>지난해 하반기 금감원 약 2만 건 점검·127건 적발 <span class="tag chk">확인</span>. 서류·현장 확인</td></tr>
+  <tr><td>구청 위생과 등</td><td>폐업 미신고 업소 정리, 점검 대상 관리</td><td>식품위생법 등 <span class="tag chk">확인</span></td><td>현장 확인. 서울 4개 업종만 장부 영업 중의 28~46%가 상가 목록에 없음 <span class="tag">실측</span></td></tr>
+  <tr><td>창업자·컨설턴트·심사역</td><td>동네 업종 흐름(개업·폐업) 확인</td><td>정책자금·보증 심사, 창업 계획서</td><td>유료 보고서 또는 수작업 집계</td></tr>
+  <tr><td>기업 구매·재무팀</td><td>거래처 재무·공시 확인</td><td>거래처 등록 실사</td><td>DART에서 사람이 찾아 옮김</td></tr>
+</table>
+<p>공통점은 세 가지다. ① <b>기한·제재가 있어 안 할 수 없다.</b> ② <b>필요한 자료는 공공에 이미 있다</b>(인허가 대장, 공정위 가맹정보, 상가정보, DART). ③ 그런데 기관마다 흩어져 있고 형식이 달라 <b>사람이 모으고 맞추는 데 시간과 돈이 든다.</b> 이 '모으고 맞추는' 부분이 에이전트가 대신할 몫이다.</p>
+<div class="callout warn"><b>정부도 AI 에이전트를 나눠 준다.</b> 과기정통부는 2026년 말까지 전 국민에게 무료 AI 에이전트(카카오·KT·SKT 컨소시엄, 예약·결제·공공 서비스 신청)를 제공한다 <span class="tag chk">확인</span> Korea Times 2026-09-04. 범용 비서는 "자료를 찾아 주는" 데까지는 한다. 그러나 정보공개서 숫자를 <b>검증된 규칙으로 미리 채우고 틀릴 확률까지 밝히는 일</b>은 하지 않는다. 우리는 범용 비서와 싸우지 않고, KT가 예고한 에이전트 마켓플레이스 같은 곳에 <b>전문 레시피로 들어가는 것</b>을 채널로 본다.</div>
+</section>
+
+<section class="page">
+<h2>2. 해결: CapCred — 요청 한 줄을 결과물로</h2>
+<div class="pipe">
+  <div><b>1 접수</b>"B브랜드 2025년 정보공개서 정기변경 준비해 줘" → 할 일(레시피)과 빈칸(브랜드·연도·지역·업종·회사)을 고른다. 지금은 규칙 기반, 다음 단계에 LLM 접수.</div>
+  <div><b>2 도구</b>저장된 공공데이터와 API를 부른다: 서울 인허가 89만 곳, 공정위 브랜드 목록·지역별 가맹점 수, 상가정보 55만 곳, OpenDART 재무·공시.</div>
+  <div><b>3 판단 규칙</b>검정을 통과한 규칙만 쓴다: 같은 자리 재개업 = 명의변경 추정, 예상값 = 작년 신고 x (1 + 실측 증감률), 경보 = 3곳 또는 10%.</div>
+  <div><b>4 결과물 + 서명</b>초안·확인서·목록과 작업 기록(쓴 자료, 행 수, 걸린 시간). 마지막 판단·서명은 사람.</div>
+</div>
+<h3>지금 동작하는 레시피 6개 <span class="tag">실측</span> <span class="small">(caed/concierge.py, 대표 요청 실행 시간 — 첫 요청은 자료 적재 포함)</span></h3>
+<table>
+  <tr><th>레시피</th><th>누가 쓰나</th><th>결과물</th><th class="num">에이전트</th><th>사람이 마지막에 할 일</th></tr>
+  <tr><td>정보공개서 정기변경</td><td>가맹거래사·본부</td><td>마감일, 등록 이력, 지역별 신고 매장 수, 올해 예상값·경보, 신규·폐업·명의변경 명세, 2028 신설 항목, DART 감사보고서 목록</td><td class="num">30초</td><td>검토·서명·등록</td></tr>
+  <tr><td>인근 가맹점 10곳 문서</td><td>가맹본부</td><td>예정지에서 가까운 같은 브랜드 10곳(상호·소재지·거리), 500m 안 출점 수</td><td class="num">26초</td><td>명단 대조·전화번호</td></tr>
+  <tr><td>사업장 실재·이력 확인서</td><td>은행·보증기관·구매팀</td><td>인허가 상태·업력, 같은 자리 10년 교체 이력, 상가 목록 대조(참고), 법인이면 DART 재무</td><td class="num">6초</td><td>현장점검 여부 판단</td></tr>
+  <tr><td>인허가 대장 정비 목록</td><td>구청</td><td>장부 영업 중인데 상가 목록에 없는 곳(오래된 순)</td><td class="num">4초</td><td>현장 확인·처분</td></tr>
+  <tr><td>동네 업종 기준선</td><td>창업자·컨설턴트·심사역</td><td>영업 중·12개월 개업·폐업, 첫해 폐업(양도 추정 뺀 값)</td><td class="num">1초</td><td>판단</td></tr>
+  <tr><td>회사 재무·공시 요약</td><td>구매·재무팀, 가맹희망자</td><td>매출·영업이익·자산·부채 3년, 최근 공시 링크</td><td class="num">1초</td><td>원문 확인</td></tr>
+</table>
+<p class="small">예: 동네 기준선에서 서울 카페의 '개업 첫해 폐업'은 45.0%로 보이지만, 같은 자리 즉시 재개업(양도·명의변경 추정)을 빼면 5.5%다 <span class="tag">실측</span>. 공공 기록을 그대로 옮기면 틀린 숫자가 나오는 곳을, 검정한 규칙으로 바로잡는 것이 사람 대신 하는 일의 핵심이다.</p>
+</section>
+
+<section class="page">
+<h2>3. 첫 제품: 정보공개서 정기변경 에이전트</h2>
+<div class="two">
+<div>
+<h3>왜 여기서 시작하나</h3>
+<ul>
+  <li><b>돈 낼 이유가 분명하다</b> — 사람 대행가가 공개돼 있다(변경 30~33만 원, 신규 60~290만 원) <span class="tag chk">확인</span>.</li>
+  <li><b>매년 같은 날 수요가 온다</b> — 12월 결산 본부는 4월 30일 마감. 2028년부터는 분기마다.</li>
+  <li><b>고객이 좁고 분명하다</b> — 소규모 본부(브랜드의 74.4%가 가맹점 10개 미만) <span class="tag chk">확인</span>와 등록 가맹거래사(수백 명 규모 <span class="tag est">추정</span>, 한 명이 수십~수백 건 처리).</li>
+  <li><b>국내에 자동화 제품이 없다</b> — 사람 대행과 행정사 자문 제휴뿐 <span class="tag chk">확인</span>.</li>
+</ul>
+<h3>법 구조: 도구로 판다</h3>
+<p>정보공개서 작성 자문과 등록 대행은 가맹사업법 제28조의 <b>가맹거래사 업무</b>이고, 법제처 해석(17-0355)은 등록하지 않은 행정사도 이를 업으로 할 수 없다고 본다 <span class="tag chk">확인</span>. 그래서 CapCred는 (가) 가맹거래사가 쓰는 업무 도구, (나) 본부가 자기 문서를 고칠 때 쓰는 셀프 소프트웨어로만 판다. 세무사와 회계 소프트웨어의 관계와 같다.</p>
+<h3>돈과 시간 <span class="tag est">추정</span></h3>
+<table>
+  <tr><th></th><th>지금(사람)</th><th>CapCred + 사람 검토</th></tr>
+  <tr><td>비용</td><td>30~33만 원</td><td>리포트 10만 원 안팎 + 검토</td></tr>
+  <tr><td>시간</td><td>5~10일</td><td>초안 재료 30초, 사람은 경보·명세만 대조</td></tr>
+  <tr><td>정확도</td><td>작년 숫자 복사 시 오차 5.5곳</td><td>예상값 오차 4.6곳, 바뀔 곳 83% 적중 <span class="tag">실측</span></td></tr>
+</table>
+<p class="small">시장: 정기변경 연 약 1.1만 건 x 30만 원 = 연 약 33억 원 규모의 대행 시장 <span class="tag est">추정</span>.</p>
+</div>
+<div>
+<figure><img src="../business/agent_demo.png" style="width:100%;border:1px solid #e5e7eb;"><figcaption>그림 1. 지난 시즌(회계년도 2025) 재현 화면. 서울 외식 537개 브랜드, 확인할 매장 변동 1,995건, 경보 150개, 공개된 실제 신고 대비 경보 적중 88%. 브랜드는 가명 <span class="tag">실측</span></figcaption></figure>
+</div>
+</div>
+</section>
+
+<section class="page">
+<h2>4. 어떻게 시험했나 — 그리고 무엇이 기각됐나</h2>
+<h3>자료와 기간</h3>
+<table>
+  <tr><th>자료</th><th class="num">규모</th><th>기간</th></tr>
+  <tr><td>서울 지방행정 인허가(카페·음식점 등 10개 업종)</td><td class="num">894,933곳 · 채점 업소-연 927,830</td><td>학습 2014~2019 / 검증 2021~2024 / 매달 갱신</td></tr>
+  <tr><td>공정위 브랜드 등록 목록</td><td class="num">93,570행</td><td>2017~2026</td></tr>
+  <tr><td>공정위 브랜드 지역별 가맹점·직영점 수</td><td class="num">1,393,185행</td><td>회계년도 2018~2025</td></tr>
+  <tr><td>소상공인시장진흥공단 상가정보</td><td class="num">554,088곳</td><td>2026-06</td></tr>
+  <tr><td>OpenDART 재무·공시</td><td class="num">요청마다 조회</td><td>최근 3년</td></tr>
+</table>
+<h3>방법: 먼저 적고, 나중에 채점한다</h3>
+<p>모든 판단 규칙은 결과를 보기 전에 기준과 함께 <code>scoreboard/HYPOTHESES.md</code>에 적고 커밋했다. 결과를 본 뒤 기준을 바꾸지 않는다. 기각되면 제품에서 빼거나 '참고'로 낮춘다.</p>
+<table>
+  <tr><th>검정</th><th>물은 것</th><th>결과</th><th>제품에 미친 영향</th></tr>
+  <tr><td>H-2026-10-AC</td><td>예상값이 작년 숫자 복사보다 올해 신고에 가깝나, 경보가 맞나</td><td><b>성립</b>: 오차 5.54 → 4.60곳(-16.8%), 증감 방향 82.9%, 경보 정밀도 83.2% (879개 브랜드, 3,131 브랜드-연)</td><td>리포트에 예상값·경보를 싣는다</td></tr>
+  <tr><td>H-2026-10-AB·AB2</td><td>신고 매장 수와 인허가 실측이 같은가, 실측이 1년 앞서나</td><td>수준 <span class="no">기각</span>(순위상관 0.58, 실측은 신고의 약 2/3) · 방향 <b>성립</b>(0.61) · "1년 늦다" <span class="no">기각</span>(6.4%)</td><td>실측 숫자를 신고값으로 쓰지 않고 증감률만 쓴다. '1년 늦다' 문구 폐기</td></tr>
+  <tr><td>H-2026-10-AD</td><td>장부 영업 중인데 상가 목록에 없는 곳이 이후 더 폐업하나</td><td><span class="no">기각</span>: 1.5배(기준 2배), 업종 2/4</td><td>대출 확인서의 해당 표시는 '참고·미검증'</td></tr>
+  <tr><td>H-2026-10-Z</td><td>독립점 첫해 폐업 급증은 양도 착시인가</td><td>혼합: 카페는 상당 부분 착시(9.1→7.2%), 음식점은 실제 증가(5.4→8.8%)</td><td>명의변경 분리 규칙(10m, -30~+180일)</td></tr>
+  <tr><td>H-2026-10-N</td><td>쇠퇴 브랜드에서 새로 연 가맹점이 더 빨리 닫나</td><td><b>성립</b>: 1년 안 폐업 카페 7.9배, 음식점 2.8배(2021~24)</td><td>브랜드 흐름을 리포트에 표시</td></tr>
+  <tr><td>개별 가게 예측(I·L·S 계열)</td><td>업력·규모·상권으로 가게 하나의 폐업을 가려내나</td><td>대부분 <span class="no">기각</span>(AUC 0.56~0.62)</td><td>점수 판매 포기 → 에이전트로 전환</td></tr>
+</table>
+<p class="small">전체 집계: 사전 등록 검정 13건, 세부 가설 35개 — 성립 17 · 기각 13 · 보류 5 <span class="tag">실측</span>.</p>
+</section>
+
+<section class="page">
+<h2>5. 넓히기: 같은 엔진, 다른 의무 업무</h2>
+<p>엔진이 아는 것은 다섯 가지다: 가게가 언제 열고 닫았나, 같은 자리 재개업(양도), 장부와 실제 목록의 차이, 브랜드 흐름, 본사 신고와 실측의 관계. 레시피는 이것을 고객별 서류 모양으로 내보낸다. 고객이 늘어도 엔진은 하나다.</p>
+<div class="two">
+<figure><img src="../business/screen_loan.png" style="width:100%;border:1px solid #e5e7eb;"><figcaption>그림 2. 은행 대출 사후점검 '차주 사업장 1장'(가명). 같은 자리에서 10년간 5번 바뀐 카페 <span class="tag">실측</span></figcaption></figure>
+<figure><img src="../business/screen_register.png" style="width:100%;border:1px solid #e5e7eb;"><figcaption>그림 3. 구청 인허가 대장 정비 확인 목록(가명). 마포구 카페 756곳·미용실 1,992곳 대조 <span class="tag">실측</span></figcaption></figure>
+</div>
+<table>
+  <tr><th>순서</th><th>누구의 일</th><th>왜 지금</th><th>상태</th></tr>
+  <tr><td>① + ②</td><td>정보공개서 정기변경 + 인근 가맹점 문서(가맹본부·가맹거래사)</td><td>2027-04-30 시즌, 2028 분기 변경</td><td>검정 성립, 시제품</td></tr>
+  <tr><td>③</td><td>사업장 실재·이력 확인서(은행·상호금융·보증기관)</td><td>2026-07-30 사후점검 대상 확대</td><td>시제품. 예측 표시는 기각 → 기록 모음으로만</td></tr>
+  <tr><td>④</td><td>인허가 대장 정비 목록(구청)</td><td>공공 실증·공모</td><td>시제품. 현장 표본 확인으로 적중률을 먼저 잰다</td></tr>
+  <tr><td>⑤⑥</td><td>동네 기준선(창업·심사), 회사 재무 요약(구매·재무)</td><td>상시</td><td>시제품</td></tr>
+</table>
+<p class="small">버린 후보(겹침): 상가 계약 전 실사(세이프홈즈), 리뷰 답글 AI(네이버·캐시노트), 개원 입지(오픈닥터), 권리금 매물(점포라인·마이프차), 상권 분석(오픈업·소상공인365), 폐업 정리(정부 원스톱 폐업지원) <span class="tag chk">확인</span>.</p>
+</section>
+
+<section class="page">
+<h2>6. 고객과 돈</h2>
+<table>
+  <tr><th>고객</th><th>파는 것</th><th>가격 가설 <span class="tag est">추정</span></th><th>첫 검증</th></tr>
+  <tr><td>등록 가맹거래사</td><td>정보공개서 리포트 + 인근 가맹점 문서</td><td>건당 10만 원 안팎 또는 월 구독</td><td>무료 시범 리포트 응답률·사용 의향</td></tr>
+  <tr><td>소규모 가맹본부(셀프)</td><td>같은 리포트, 셀프 편집</td><td>건당 10만 원 안팎</td><td>"우리 브랜드 서울 매장 변동 무료 진단" 신청 수</td></tr>
+  <tr><td>상호금융·저축은행·보증기관</td><td>사업장 확인서(건당), 폐업·명의변경 월 알림</td><td>건당 수천 원 + 월 알림</td><td>창구 담당자 시범 사용(확인 시간 비교)</td></tr>
+  <tr><td>지자체</td><td>대장 정비 목록</td><td>실증 사업·공모</td><td>표본 현장 확인 적중률</td></tr>
+</table>
+<h3>해외에서 통한 모델</h3>
+<ul>
+  <li>미국 PermitFlow — 인허가 서류 AI 에이전트, 2025-12 시리즈 B 5,400만 달러 <span class="tag chk">확인</span>: "서류 업무를 대신하는 에이전트"가 투자를 받는다.</li>
+  <li>캐나다 Osler Dash(정보공개·계약 문서 자동화), 미국 ClearlyFDD(정보공개서 AI 열람) <span class="tag chk">확인</span>: 정보공개서 문서 업무가 소프트웨어 시장이다.</li>
+  <li>미국 FRANdata FUND Score(브랜드 단위 신용점수) <span class="tag chk">확인</span>: 우리가 미뤄 둔 '등급'은 기록이 쌓인 뒤의 선택지로 남긴다.</li>
+</ul>
+<h2 style="margin-top:8mm;">7. 계획</h2>
+<table>
+  <tr><th>시기</th><th>할 일</th><th>성공 기준</th></tr>
+  <tr><td>11월 1~2주</td><td>공정위 가맹점별 계약상태(15143694)·위치·재무(15143701) 활용신청, 2026 회계년도 예상값 봉인(2027-04-30 마감 시즌 채점용)</td><td>봉인 커밋, API 승인</td></tr>
+  <tr><td>11월 3~4주</td><td>가맹거래사 무료 시범(가명 샘플 리포트), 소규모 본부 무료 진단 페이지 공개</td><td>응답 10건, 진단 신청 30건</td></tr>
+  <tr><td>12월</td><td>LLM 접수(자연어 → 레시피) 연결, 상호금융 창구 1곳 확인서 시범</td><td>확인 시간 50% 단축 측정</td></tr>
+  <tr><td>2027-01~04</td><td>정기변경 시즌 유료 운영, 봉인 예상값 공개 채점</td><td>유료 20건, 오차·경보 적중 공개</td></tr>
+  <tr><td>2027 하반기</td><td>전국 인허가 확장, 에이전트 마켓플레이스 입점 검토</td><td>서울 밖 레시피 동작</td></tr>
+</table>
+</section>
+
+<section class="page">
+<h2>8. 리스크와 한계</h2>
+<ul>
+  <li><b>서울만 봤다.</b> 인허가는 전국 원천이 있지만 아직 서울만 받았다.</li>
+  <li><b>상호로 브랜드를 추정한다.</b> 인허가 실측은 본사 신고 매장의 약 2/3만 잡는다(H-2026-10-AB2). 그래서 실측 숫자를 신고값으로 쓰지 않는다.</li>
+  <li><b>사후 정보.</b> 검정은 지금 받은 인허가 스냅숏으로 했다. 뒤늦게 등록된 폐업이 들어 있어 실시간 성능은 조금 낮을 수 있다 → 2027 시즌 봉인 채점으로 확인한다.</li>
+  <li><b>접수는 아직 규칙 기반이다.</b> 정해진 말투의 요청만 알아듣는다. LLM 접수를 붙여도 판단 규칙은 검정한 것만 쓴다.</li>
+  <li><b>법적 경계.</b> 작성 자문·등록 대행, 신용평가, 행정 처분은 하지 않는다. 결과물마다 '사람이 마지막에 할 일'을 적는다.</li>
+  <li><b>범용 AI 에이전트와의 경쟁.</b> 정부·통신 3사의 무료 에이전트가 자료 찾기는 대신한다. 우리의 방어선은 검정된 규칙과 공개 채점 기록이다.</li>
+  <li><b>고객 인터뷰가 아직 없다.</b> 가격과 시간 절감은 공개 가격과 건수로 추정했다. 11월 무료 시범이 첫 실측이다.</li>
+</ul>
+<h2 style="margin-top:8mm;">9. 제출 영상 2편</h2>
+<table>
+  <tr><th>영상</th><th>역할</th><th>내용</th></tr>
+  <tr><td>1분 모션그래픽</td><td>어떻게 시험했나</td><td>문제(1.1만 브랜드·4월 30일·30만 원) → 자료(89만 곳·139만 행·13년) → 판단 규칙 → 시험(오차 -17%, 경보 83%) → 기각 공개 → 같은 엔진, 다른 의무 업무 → CapCred</td></tr>
+  <tr><td>1분 AI 영화</td><td>누구의 일을 대신하나</td><td>작은 본부의 회사원 A씨가 '4월 30일까지 정보공개서' 메시지에 걱정한다 → 노트북에서 CapCred 캐릭터가 나타나 공공 기록으로 초안을 채우고 바뀔 두 곳을 짚는다 → A씨는 확인·서명하고 제시간에 퇴근 → 같은 캐릭터가 은행·구청·동네 가게로 → 서울 89만 곳 야경</td></tr>
+</table>
+<h2 style="margin-top:8mm;">부록. 재현 방법</h2>
+<table class="small">
+  <tr><th>무엇</th><th>명령</th></tr>
+  <tr><td>요청 한 줄 실행 / 시연 6개</td><td><code>python -X utf8 -m caed.concierge "마포구 카페 대장 정비 목록 뽑아줘"</code> / <code>... concierge demo</code></td></tr>
+  <tr><td>정보공개서 리포트(브랜드 1개)</td><td><code>python -X utf8 -m caed.fdd_agent &lt;브랜드명&gt; --code 072404 --fy 2025</code></td></tr>
+  <tr><td>예상값 검정(AC), 신고 vs 실측(AB2)</td><td><code>python -X utf8 -m caed.ftc_frcs prefill</code> / <code>... test --v2</code></td></tr>
+  <tr><td>지난 시즌 재현 화면 / 확인서·대장 화면</td><td><code>python -X utf8 -m caed.agent_public</code> / <code>python -X utf8 -m caed.agent_screens</code></td></tr>
+  <tr><td>유령 표시 검정(AD)</td><td><code>python -X utf8 -m caed.ghost_permits follow</code></td></tr>
+  <tr><td>가설 기록</td><td><code>scoreboard/HYPOTHESES.md</code> (H-2026-10-N, Z, AB, AB2, AC, AD)</td></tr>
+</table>
+<p class="small">출처: 가맹사업법 제7·28조, 법제처 17-0355, 공정위 2025 가맹사업 현황(서울시 뉴스), 크몽 가맹거래사 공개 가격, 은행연합회 사후점검준칙 개정(쿠키뉴스 2026-06-30), Korea Times 2026-09-04(전 국민 AI 에이전트), PermitFlow 시리즈 B(Pulse 2.0), Osler Dash, ClearlyFDD, FRANdata. 세부 링크는 docs/business/BUSINESS_REBOOT_2026-10-25.md, AGENT_CANDIDATES_2026-10-26.md.</p>
+</section>
+
+</body>
+</html>

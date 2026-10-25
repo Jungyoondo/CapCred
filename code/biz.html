@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>dintel × 신용캐드 · 근거 있는 기업 위험·공정 신용</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            --bg: #f8fafc; --surface: #ffffff; --ink: #0f172a; --muted: #64748b;
+            --line: #e2e8f0; --primary: #3b82f6; --primary-hover: #2563eb;
+            --buy: #ef4444; --sell: #3b82f6; --nav: #0f172a;
+            --kosdaq: #dbeafe; --kosdaq-text: #1e40af;
+            --kospi: #dcfce7; --kospi-text: #166534;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+        body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Pretendard', system-ui, sans-serif; font-size: 14px; line-height: 1.6; }
+
+        button, input, select, textarea { font-family: inherit; outline-offset: 4px; transition: all 0.2s ease; }
+        button { cursor: pointer; border: 1px solid var(--line); background: white; border-radius: 8px; padding: 10px 16px; color: var(--ink); font-weight: 500; }
+        button:hover { border-color: var(--primary); background: #f8fafc; color: var(--primary); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        a { color: var(--primary); text-decoration: none; font-weight: 500; }
+
+        h1, h2, h3, p { margin: 0; }
+        h1 { font-size: 28px; letter-spacing: -0.03em; font-weight: 700; color: #0f172a; }
+        h2 { font-size: 18px; letter-spacing: -0.02em; font-weight: 700; color: #1e293b; }
+        h3 { font-size: 15px; font-weight: 650; color: #334155; }
+
+        .muted, small { color: var(--muted); }
+        small { font-size: 12px; }
+        .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, Consolas, monospace; }
+        .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--primary); text-transform: uppercase; }
+
+        .tag { display: inline-flex; align-items: center; gap: 4px; background: #eff6ff; color: #1e40af; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600; cursor: default; user-select: none; }
+        .tag.warn { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .tag.gray { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .tag.active-filter { background: var(--primary); color: white; border: 1px solid var(--primary); }
+        .tag.kosdaq { background: var(--kosdaq); color: var(--kosdaq-text); border: 1px solid #bfdbfe; }
+        .tag.kospi { background: var(--kospi); color: var(--kospi-text); border: 1px solid #bbf7d0; }
+        .tag.risk { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; font-size: 10px; padding: 2px 6px; }
+
+        .sidebar { position: fixed; inset: 0 auto 0 0; width: 220px; background: var(--nav); color: #e2e8f0; padding: 32px 20px; display: flex; flex-direction: column; z-index: 20; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
+        .brand { color: white; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; padding: 0 12px; margin-bottom: 4px; }
+        .brand b { display: inline-grid; place-items: center; background: #3b82f6; width: 32px; height: 32px; border-radius: 8px; margin-right: 8px; font-size: 18px; }
+        .sidebar small { color: #94a3b8; padding: 0 12px; display: block; }
+        .navlabel { color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; margin: 40px 12px 12px; }
+        .sidebar a { display: flex; gap: 12px; align-items: center; color: #94a3b8; padding: 12px 14px; border-radius: 8px; margin-bottom: 4px; font-weight: 500; transition: all 0.2s; }
+        .sidebar a:hover, .sidebar a.active { background: #1e293b; color: #ffffff; }
+        .navfoot { margin-top: auto; border-top: 1px solid #1e293b; padding: 20px 12px 0; font-size: 12px; color: #94a3b8; }
+        .navfoot strong { display: block; color: #f8fafc; margin: 6px 0; font-weight: 600; font-size: 13px; }
+
+        .main { margin-left: 220px; }
+        .topbar { position: sticky; top: 0; height: 70px; border-bottom: 1px solid var(--line); background: rgba(248, 250, 252, 0.85); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; z-index: 15; }
+        .topbar .actions { display: flex; gap: 10px; align-items: center; }
+        .primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .primary:hover { background: var(--primary-hover); color: white; }
+        .content { max-width: 1600px; padding: 40px; margin: auto; }
+
+        .pagehead { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+
+        .macro-alert { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #cbd5e1; border-left: 4px solid var(--primary); border-radius: 8px; padding: 14px 20px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .macro-alert h3 { color: #0f172a; margin-bottom: 2px; }
+        .macro-alert p { color: #64748b; font-size: 13px; margin: 0; }
+        .macro-alert.danger { border-left-color: #ef4444; background: #fef2f2; }
+        .macro-alert.danger h3 { color: #b91c1c; }
+
+        .grid { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr); gap: 24px; }
+        .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 28px; min-width: 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .cardhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+
+        .brief { background: #1e293b; color: #f8fafc; border: none; }
+        .brief .eyebrow { color: #60a5fa; }
+        .brief h2 { font-size: 24px; line-height: 1.4; margin: 16px 0; color: white; }
+        .brief p { color: #cbd5e1; max-width: 650px; font-size: 14px; }
+
+        .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 24px 0 32px; }
+        .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .kpi .num { font-size: 32px; line-height: 1.2; font-weight: 800; margin: 12px 0 8px; letter-spacing: -0.03em; }
+
+        .sectionhead { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 40px 0 20px; }
+
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .tab-group { display: flex; background: #e2e8f0; border-radius: 8px; padding: 4px; }
+        .tab-btn { background: transparent; border: none; padding: 6px 16px; font-size: 13px; font-weight: 600; color: #475569; border-radius: 6px; }
+        .tab-btn.active { background: white; color: #0f172a; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        input, select { border: 1px solid #cbd5e1; border-radius: 8px; background: white; padding: 8px 14px; color: var(--ink); font-size: 13px; }
+        input[type=search] { width: 240px; }
+
+        .tablewrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); max-height: 600px; overflow-y: auto; }
+        table { border-collapse: collapse; width: 100%; font-size: 13px; white-space: nowrap; background: white; position: relative; }
+        th { text-align: left; font-weight: 600; color: var(--muted); padding: 14px 18px; background: #f8fafc; border-bottom: 1px solid var(--line); font-size: 12px; position: sticky; top: 0; z-index: 1; }
+        td { padding: 16px 18px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+        tbody tr { cursor: pointer; transition: background 0.1s; }
+        tbody tr:hover { background: #f1f5f9; }
+        tr.selected { background: #eff6ff; }
+        .stockname { font-weight: 700; color: #0f172a; font-size: 15px; display: flex; align-items: center; gap: 6px; }
+        .price { font-weight: 600; color: #334155; }
+
+        .chart { width: 100%; height: 200px; display: block; margin-top: 10px; }
+        .empty { padding: 40px 20px; text-align: center; color: var(--muted); border: 1px dashed #cbd5e1; border-radius: 12px; background: #f8fafc; font-size: 13px; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+        .metric-box { background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; }
+        .metric-box.highlight { background: #eff6ff; border-left: 4px solid var(--primary); border-top: 1px solid #bfdbfe; border-right: 1px solid #bfdbfe; border-bottom: 1px solid #bfdbfe; }
+
+        .fund-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+        .fund-item { font-size: 12px; color: #475569; display: flex; justify-content: space-between; padding: 8px; background: white; border: 1px solid var(--line); border-radius: 6px; }
+        .fund-item b { color: #0f172a; }
+
+        .trade { position: fixed; right: 32px; bottom: 32px; width: 340px; z-index: 50; background: white; border: 1px solid #cbd5e1; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .tradehead { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); background: #f8fafc; border-radius: 16px 16px 0 0; }
+        .tradebody { padding: 20px; }
+        .tradebody label { display: block; color: #475569; font-size: 12px; font-weight: 600; margin: 12px 0 6px; }
+        .tradebody input, .tradebody select { width: 100%; }
+        .tradebuttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+        .buy { background: var(--buy); border-color: var(--buy); color: white; }
+        .sell { background: var(--sell); border-color: var(--sell); color: white; }
+        .trade.collapsed { transform: translateY(calc(100% - 60px)); }
+
+        .toast { position: fixed; top: 90px; left: 50%; transform: translateX(-50%); padding: 14px 24px; background: #1e293b; color: white; border-radius: 10px; z-index: 100; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); font-weight: 500; font-size: 14px; }
+        .hidden { display: none !important; }
+
+
+        /* ---- PROJECT: 기업 인텔리전스(dintel) - 실투자 화면과 분리 ---- */
+        .view-project .trade, .view-project #tradePanel, .view-project .topbar .actions { display: none !important; }
+        .searchbar { display: flex; gap: 10px; align-items: center; margin: 20px 0 8px; flex-wrap: wrap; }
+        .searchbar input { width: 340px; padding: 12px 16px; font-size: 15px; }
+        .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+        .chip { padding: 6px 12px; border-radius: 999px; font-size: 12px; }
+        .p-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+        .p-full { grid-column: 1 / -1; }
+        .chip.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+        .feed-tier { font-size: 13px; font-weight: 800; margin: 18px 0 6px; }
+        .feed-tier small { font-weight: 500; color: var(--muted); }
+        .feed-table td { vertical-align: top; } .feed-table .co { white-space: nowrap; cursor: pointer; color: #1d4ed8; }
+        .tag.risk { background: #fee2e2; color: #b91c1c; } .tag.dil { background: #fef3c7; color: #92400e; }
+        .flag { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+        .flag:last-child { border-bottom: none; }
+        .flag .dot { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font-size: 12px; flex: none; }
+        .flag.hit .dot { background: #fee2e2; color: #b91c1c; } .flag.ok .dot { background: #dcfce7; color: #166534; }
+        .pbar { height: 8px; background: #e2e8f0; border-radius: 4px; position: relative; margin-top: 6px; }
+        .pbar i { position: absolute; top: -3px; width: 14px; height: 14px; border-radius: 50%; background: var(--primary); transform: translateX(-50%); }
+        .pbar b { position: absolute; top: -2px; left: 50%; width: 2px; height: 12px; background: #94a3b8; }
+        .sent-pos { color: #b91c1c; } .sent-neg { color: #1d4ed8; }
+        .stat { font-size: 12px; } .stat .sig { color: #b45309; font-weight: 700; }
+        .loading-steps { color: var(--muted); font-size: 13px; line-height: 2; }
+        .disc-table td { white-space: normal; }
+        @media(max-width: 640px) {
+            #project .pagehead { flex-direction: column; align-items: flex-start; gap: 8px; }
+            #project .card { padding: 16px; } #project .cardhead { flex-wrap: wrap; }
+            #project .kpis { grid-template-columns: 1fr 1fr; gap: 10px; } #project .kpi { padding: 12px; }
+            #project .kpi .num { font-size: 18px !important; } #project h1 { font-size: 22px; }
+        }
+
+        @media(max-width: 1150px) {
+            .p-grid { grid-template-columns: 1fr; } .searchbar input { width: 100%; }
+            .sidebar { width: 80px; padding: 20px 10px; align-items: center; }
+            .sidebar .brand b { margin: 0; } .sidebar .brand span, .sidebar small, .navlabel, .sidebar a span, .navfoot { display: none; }
+            .main { margin-left: 80px; } .content { padding: 32px 24px; }
+            .grid, .metrics-grid, .fund-grid { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); }
+        }
+        /* ---- 사업 사이트 전용(2026-10-08) ---- */
+        .caed-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+        .caed-form label { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+        .caed-form input { padding: 10px 12px; }
+        .scores3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+        .scores3 .kpi .num { font-size: 34px !important; }
+        @media(max-width: 900px) { .caed-form, .scores3 { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="brand"><b>d</b><span>DINTEL × 신용캐드</span></div>
+    <small>EVIDENCE-BASED CREDIT</small>
+    <div class="navlabel">상장사</div>
+    <nav>
+        <a href="#" data-pnav="feed" class="active"><i>▤</i><span>오늘의 공시</span></a>
+        <a href="#" data-pnav="company"><i>◎</i><span>기업 리포트</span></a>
+        <a href="#" data-pnav="risk"><i>⚠</i><span>재무위험 조기경보</span></a>
+    <div class="navlabel">소상공인</div>
+        <a href="#" data-pnav="caed"><i>⚖</i><span>공정신용 진단</span></a>
+    </nav>
+    <div class="navfoot"><span>SAME DATA, SEPARATE SITE</span><strong>econ-lab 공용 데이터</strong>투자 사이트(:8765)와 같은 원천 데이터, 다른 목적</div>
+</aside>
+<div class="main">
+    <header class="topbar"><span class="crumb muted" style="font-weight:600; font-size:13px;">사업 / 근거 있는 기업 위험 · 공정 신용</span></header>
+    <main class="content">
+        <section id="project">
+            <div class="pagehead">
+                <div>
+                    <div class="eyebrow">BUSINESS · DINTEL × 신용캐드</div>
+                    <h1>근거 있는 기업 위험 · 공정 신용</h1>
+                    <p>상장사는 공시의 연쇄로 다음 12개월 위험을, 소상공인은 규모·경기 편향을 걷어 낸 공정 신용을 보여줍니다. 모든 숫자에는 검증 방법과 한계가 함께 붙습니다.</p>
+                </div>
+                <span class="tag gray">매수·매도 의견 없음 · 정보제공형</span>
+            </div>
+            <div class="chips" id="pModes" style="margin-bottom:16px;">
+                <button class="chip active" data-pmode="feed">오늘의 공시</button>
+                <button class="chip" data-pmode="company">기업 리포트</button>
+                <button class="chip" data-pmode="risk">재무위험 조기경보</button>
+                <button class="chip" data-pmode="caed">소상공인 공정신용</button>
+            </div>
+            <div id="pLive"></div>
+            <div id="pFeed"><div class="empty">오늘의 공시를 불러오는 중…</div></div>
+            <div id="pRisk" class="hidden"><div class="empty">재무위험 조기경보를 불러오는 중…</div></div>
+            <div id="pCaed" class="hidden"></div>
+            <div id="pCompany" class="hidden">
+            <div class="searchbar">
+                <input id="pQuery" list="pCands" placeholder="기업명 또는 종목코드 (예: 삼성전자, 247540)" autocomplete="off">
+                <datalist id="pCands"></datalist>
+                <button class="primary" id="pGo">리포트 생성</button>
+                <label style="font-size:12px; color:var(--muted); display:flex; gap:6px; align-items:center;">
+                    <input type="checkbox" id="pLlm" checked style="width:auto;"> AI 문장 요약(키 설정 시)</label>
+            </div>
+            <div class="chips" id="pChips"></div>
+            <div id="pBody"><div class="empty">기업을 입력하면 공시 반응 통계·재무 추이·위험 신호·뉴스 논조를 한 화면에 보여줍니다.<br>
+                <small>사업 사이트 서버(python -m sites.biz)가 필요합니다.</small></div></div>
+            </div>
+        </section>
+    </main>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>typeof n==='number'&&Number.isFinite(n)?n.toLocaleString('ko-KR'):'—';
+const pct=n=>typeof n==='number'&&Number.isFinite(n)?`${n>0?'+':''}${n.toFixed(2)}%`:'—';
+// 사업 사이트 서버(sites/biz.py)와 같은 origin에서 열린다 - 상대 경로로 호출
+const BRIDGE_URL = '';
+/* ================= PROJECT: 기업 인텔리전스 (dintel) ================= */
+const krw = n => { if (typeof n !== 'number' || !Number.isFinite(n)) return '—';
+    const a = Math.abs(n); if (a >= 1e12) return (n / 1e12).toFixed(1) + '조'; if (a >= 1e8) return (n / 1e8).toFixed(a >= 1e9 ? 0 : 1) + '억';
+    if (a >= 1e4) return (n / 1e4).toFixed(0) + '만';
+    return n.toLocaleString('ko-KR'); };
+const pc = (n, d = 1) => typeof n === 'number' && Number.isFinite(n) ? `${n > 0 ? '+' : ''}${(n * 100).toFixed(d)}%` : '—';
+const pc0 = n => typeof n === 'number' && Number.isFinite(n) ? `${(n * 100).toFixed(1)}%` : '—';
+
+
+['삼성전자', 'SK하이닉스', '에코프로', '셀트리온'].forEach(n => {
+    const b = document.createElement('button'); b.className = 'chip'; b.textContent = n;
+    b.onclick = () => { $('pQuery').value = n; loadCompany(n); }; $('pChips').appendChild(b);
+});
+let pTimer = null;
+$('pQuery').addEventListener('input', () => {
+    clearTimeout(pTimer); const q = $('pQuery').value.trim(); if (q.length < 2) return;
+    pTimer = setTimeout(async () => {
+        try { const r = await fetch(`${BRIDGE_URL}/api/company/search?q=${encodeURIComponent(q)}`); const d = await r.json();
+            $('pCands').innerHTML = (d.candidates || []).map(c => `<option value="${esc(c.corp_name)}">${esc(c.stock_code)} · ${esc(c.market)}</option>`).join('');
+        } catch (e) { /* 브릿지 미실행 - 조용히 무시 */ }
+    }, 250);
+});
+$('pGo').onclick = () => loadCompany($('pQuery').value.trim());
+$('pQuery').addEventListener('keydown', e => { if (e.key === 'Enter') loadCompany($('pQuery').value.trim()); });
+
+/* ---- 오늘의 공시(시장 전체) ---- */
+let feedLoaded = false, feedShowRoutine = false, feedData = null;
+function setPMode(m) {
+    document.querySelectorAll('#pModes .chip').forEach(b => b.classList.toggle('active', b.dataset.pmode === m));
+    $('pFeed').classList.toggle('hidden', m !== 'feed'); $('pCompany').classList.toggle('hidden', m !== 'company');
+    $('pLive').classList.toggle('hidden', m !== 'feed');     // 10-20: 실시간 공시 패널은 '오늘의 공시'에서만(다른 탭 내용을 가리던 문제)
+    $('pRisk').classList.toggle('hidden', m !== 'risk');
+    $('pCaed').classList.toggle('hidden', m !== 'caed');
+    document.querySelectorAll('.sidebar a[data-pnav]').forEach(a => a.classList.toggle('active', a.dataset.pnav === m));
+    if (m === 'caed' && !caedReady) renderCaedForm();
+    if (m === 'feed' && !feedLoaded) loadFeed();
+    if (m === 'risk' && !riskLoaded) loadRisk();
+}
+
+/* ---- 재무위험 조기경보 (2026-10-08, dintel.risk_score + 공개 성적표) ---- */
+let riskLoaded = false;
+async function loadRisk() {
+    try {
+        const r = await fetch(`${BRIDGE_URL}/api/risk`); const d = await r.json();
+        if (!d.ok) { $('pRisk').innerHTML = `<div class="empty">${esc(d.error || '오류')}</div>`; return; }
+        riskLoaded = true; renderRisk(d);
+    } catch (e) {
+        $('pRisk').innerHTML = `<div class="empty">브릿지 서버에 연결할 수 없습니다 - 터미널에서 <b>python econ_lab_bridge.py</b> 실행 후 다시 시도하세요.</div>`;
+    }
+}
+function riskMarket(m) {
+    const v = m.validation || {}, dec = v.deciles || [], mx = Math.max(...dec, 0.01);
+    const bars = dec.map((x, i) => `<div style="display:flex; flex-direction:column; align-items:center; flex:1; gap:4px;">
+        <small class="mono">${(x * 100).toFixed(1)}%</small>
+        <div style="width:70%; height:${Math.max(2, x / mx * 120)}px; border-radius:4px 4px 0 0; background:${i === 9 ? '#dc2626' : '#cbd5e1'};"></div>
+        <small>${i + 1}</small></div>`).join('');
+    const yrs = Object.entries(v.auc_by_year || {}).map(([y, a]) => `${y} ${a.toFixed(2)}`).join(' · ');
+    const rows = (m.top || []).map((x, i) => `<tr><td class="mono">${i + 1}</td>
+        <td class="co" data-code="${esc(x.stock_code)}" data-name="${esc(x.corp_name)}">${esc(x.corp_name)} <small>${esc(x.stock_code)}</small></td>
+        <td class="mono" style="color:${x.risk >= 0.2 ? '#dc2626' : 'inherit'};">${(x.risk * 100).toFixed(1)}%</td>
+        <td class="mono">${(x.pctile * 100).toFixed(0)}%</td><td><small>${esc(x.drivers || '-')}</small></td></tr>`).join('');
+    return `<div class="card" style="margin-bottom:16px;">
+      <div class="cardhead"><div><h2>${esc(m.market)} · 기준 ${esc(m.asof)}</h2>
+        <small>학습 ${esc(v.train || '')} → 표본외 검증 ${esc(v.test || '')} (기업-월 ${(v.n_test || 0).toLocaleString('ko-KR')}) · 모델: ${esc(v.model || '')}</small></div></div>
+      <div class="kpis" style="margin:8px 0 0;">
+        <div class="kpi"><small>검증 AUC</small><div class="num mono" style="font-size:24px;">${(v.auc || 0).toFixed(2)}</div><small>가격만 ${(v.auc_price_only || 0).toFixed(2)} · 연도별 ${esc(yrs)}</small></div>
+        <div class="kpi"><small>경고 상위 10%의 실제 위험률</small><div class="num mono" style="font-size:24px; color:#dc2626;">${pc0(v.top10_rate)}</div><small>평균 ${pc0(v.base_rate)}의 ${(v.top10_rate / v.base_rate).toFixed(1)}배</small></div>
+        <div class="kpi"><small>상위 10%가 미리 잡은 위험</small><div class="num mono" style="font-size:24px;">${pc0(v.capture_top10)}</div><small>전체 위험 발생 중</small></div></div>
+      <div style="margin-top:14px;"><small>검증 기간 위험 점수 10분위별 실제 위험 공시율 (10 = 가장 위험)</small>
+        <div style="display:flex; align-items:flex-end; gap:4px; height:170px; margin-top:6px;">${bars}</div></div>
+      <p style="font-size:12px; color:var(--muted); margin-top:10px;">위험을 올리는 공시(계수 순): ${(m.drivers || []).map(x => esc(x.name)).join(' · ')}</p>
+      <div class="tablewrap feed-table" style="margin-top:8px;"><table><thead><tr><th>#</th><th>기업</th><th>12개월 위험 추정</th><th>시장 내 백분위</th><th>근거(직전 12개월 공시 수)</th></tr></thead>
+        <tbody>${rows}</tbody></table></div></div>`;
+}
+function renderRisk(d) {
+    const led = (d.ledger || []).map(x => `<tr><td>${esc(x.market)}</td><td class="mono">${esc(x.asof)}</td><td class="mono">${esc(x.published_at)}</td>
+        <td class="mono">${x.n_warn}</td><td class="mono"><small>${esc(x.sha)}…</small></td><td>${esc(x.status)}</td></tr>`).join('');
+    $('pRisk').innerHTML = `<div class="card" style="margin-bottom:16px;"><h2>재무위험 조기경보</h2>
+        <p style="margin-top:6px;">공시의 연쇄(자금조달 · 최대주주변경 · 대표이사 교체 · 조회공시 …)로 다음 12개월 안에 관리종목 · 감사의견 · 상장폐지 · 불성실공시가 나올 확률을 추정합니다.
+        규칙은 2020년까지의 데이터로 정하고 2022년 이후에 그대로 적용해 검증했습니다.</p></div>
+        ${(d.markets || []).map(riskMarket).join('')}
+        <div class="card"><h2>공개 성적표</h2><small>경고 목록을 발행 시점에 SHA-256으로 고정하고 12개월 뒤 채점합니다 - 사후에 고칠 수 없는 적중률.</small>
+        <div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th>시장</th><th>기준일</th><th>발행 시각</th><th>경고 수</th><th>해시</th><th>상태</th></tr></thead>
+        <tbody>${led || '<tr><td colspan="6">아직 발행 없음</td></tr>'}</tbody></table></div>
+        <p style="margin-top:12px; font-size:12px; color:#94a3b8;">${esc(d.disclaimer || '')}</p></div>`;
+    document.querySelectorAll('#pRisk .co').forEach(td => td.onclick = () => {
+        setPMode('company'); $('pQuery').value = td.dataset.name; loadCompany(td.dataset.code || td.dataset.name); });
+}
+document.querySelectorAll('#pModes .chip').forEach(b => b.onclick = () => setPMode(b.dataset.pmode));
+// 2026-10-16 실시간 공시: 1분 간격으로 처음 포착한 공시(scripts/collect_disclosures_live.py) - 1분마다 새로고침
+// 관심기업 목록(/api/watchlist): 고객이 지켜보는 기업 - 그 기업 공시는 맨 위 + 강조, 수집기가 윈도우 알림도 띄움
+let liveOnlyWatched = false, liveMsg = '';
+async function watchEdit(params) {
+    const r = await fetch(`${BRIDGE_URL}/api/watchlist?${params}`); const d = await r.json();
+    liveMsg = d.message || '';
+    loadLive();
+}
+async function loadLive() {
+    try {
+        const r = await fetch(`${BRIDGE_URL}/api/live`);
+        const d = await r.json();
+        if (!d.ok) { $('pLive').innerHTML = ''; return; }
+        const items = d.items || [];
+        const w = items.filter(x => x.watched);
+        const rest = items.filter(x => !x.watched && x.tier <= 2).slice(0, 12);
+        const show = liveOnlyWatched ? w : [...w, ...(rest.length ? rest : items.filter(x => !x.watched).slice(0, 8))];
+        const rows = show.map(x => `<tr${x.watched ? ' style="background:rgba(250,204,21,.12);"' : ''}>
+            <td class="mono">${esc(x.first_seen.slice(11, 16))}${x.late ? ' <span class="tag gray">늦게 확인</span>' : ''}</td>
+            <td>${x.watched ? '<span class="tag dil">관심</span> ' : ''}<span class="tag ${x.market === 'KOSDAQ' ? 'kosdaq' : 'kospi'}">${esc(x.market)}</span> ${esc(x.corp_name)}</td>
+            <td><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.report_nm)}</a>
+                ${(x.risk_tags || []).map(t => `<span class="tag risk">${esc(t)}</span>`).join(' ')}${x.dilutive ? ' <span class="tag dil">희석성</span>' : ''}</td>
+            <td>${feedStatBase(x)}</td></tr>`).join('') || `<tr><td colspan="4" class="muted">${liveOnlyWatched ? '오늘 관심기업 공시 없음' : '공시 없음'}</td></tr>`;
+        const wl = (d.watchlist || []).map(x => `<button class="chip" data-wrm="${esc(x.stock_code)}" title="빼기">${esc(x.corp_name)} ×</button>`).join(' ');
+        const c = d.counts || {};
+        $('pLive').innerHTML = `<div class="card" style="margin-bottom:12px;">
+            <div class="cardhead"><div><h2>실시간 공시 <span class="tag ${d.collector === 'live' ? 'kosdaq' : 'gray'}">${d.collector === 'live' ? '1분 간격 수집 중' : esc(d.collector)}</span></h2>
+            <small>처음 포착한 시각 순 · 관심기업 → 주의·과거 반응 유의 순 · 오늘 ${c.total || 0}건 (주의 ${c.tier1 || 0} · 유의 ${c.tier2 || 0} · 관심기업 ${c.watched || 0}) · ${esc((d.generated || '').slice(11))} 갱신</small></div></div>
+            <div style="margin:8px 0; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+              <b style="font-size:13px;">관심기업</b> ${wl || '<span class="muted" style="font-size:12px;">없음 - 기업명이나 코드로 추가</span>'}
+              <input id="wAdd" placeholder="기업명 또는 6자리 코드" style="padding:4px 8px; font-size:13px;">
+              <button class="chip" id="wAddBtn">추가</button>
+              <button class="chip ${liveOnlyWatched ? 'active' : ''}" id="wOnly">관심기업만</button>
+              <small id="wMsg" class="muted">${esc(liveMsg)}</small></div>
+            <div class="tablewrap feed-table"><table><thead><tr><th>포착</th><th>기업</th><th>공시</th><th>같은 유형의 과거 시장 반응</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+        $('wAddBtn').onclick = () => { const v = $('wAdd').value.trim(); if (v) watchEdit('add=' + encodeURIComponent(v)); };
+        $('wAdd').onkeydown = e => { if (e.key === 'Enter') $('wAddBtn').click(); };
+        $('wOnly').onclick = () => { liveOnlyWatched = !liveOnlyWatched; loadLive(); };
+        document.querySelectorAll('[data-wrm]').forEach(b => b.onclick = () => watchEdit('remove=' + b.dataset.wrm));
+    } catch (e) { $('pLive').innerHTML = ''; }
+}
+setInterval(loadLive, 60000);
+
+async function loadFeed(date) {
+    $('pFeed').innerHTML = `<div class="card"><h2>오늘의 공시 불러오는 중…</h2><small>DART 주요사항·거래소 공시 최근 7일(10분 캐시)</small></div>`;
+    try {
+        const r = await fetch(`${BRIDGE_URL}/api/feed${date ? '?date=' + encodeURIComponent(date) : ''}`);
+        const d = await r.json();
+        if (!d.ok) { $('pFeed').innerHTML = `<div class="empty">${esc(d.error || '오류')}</div>`; return; }
+        feedLoaded = true; feedData = d; renderFeed(d);
+    } catch (e) {
+        $('pFeed').innerHTML = `<div class="empty">브릿지 서버에 연결할 수 없습니다 - 터미널에서 <b>python econ_lab_bridge.py</b> 실행 후 다시 시도하세요.</div>`;
+    }
+}
+function contractLine(k) {
+    if (!k) return '';
+    const fl = [k.voluntary ? '자율공시' : '의무공시', k.sub ? '자회사 계약' : '', k.overseas ? '해외' : '', k.cond ? '조건부' : '',
+        k.related ? '특수관계 상대' : '', k.repeat === true ? '기존 거래처' : k.repeat === false ? '신규 거래처' : '',
+        k.years != null ? `기간 ${k.years.toFixed(1)}년` : ''].filter(Boolean).join(' · ');
+    const b = k.bucket_stat, a = k.all_stat;
+    const hist = b ? ` → 과거 ${esc(k.src)} '${esc(k.bucket)}' 계약 n=${b.n}: 발표 ${pc(b.ann2)}${b.ann2_sig ? '<span class="sig">★</span>' : ''} · 20일 중앙 ${pc(b.d20_med)}${b.d20_sig ? '<span class="sig">★</span>' : ''} · 위약 대비 20일 ${pc(b.d20 - k.placebo_d20)} · 상승 ${pc0(b.hit20)}`
+        + (a ? ` <small>(공급계약 전체 n=${a.n}: 20일 중앙 ${pc(a.d20_med)})</small>` : '')
+        : (k.bucket ? ' <small>(규모 구간별 통계 계산 전)</small>' : '');
+    return `<br><span class="stat"><b>${k.kind === '해지' ? '계약 해지' : '계약 규모'}: 매출액 대비 ${k.ratio == null ? '—' : k.ratio.toFixed(1) + '%'}</b>`
+        + (k.amount ? ` (${krw(k.amount)}원)` : '') + (fl ? ` · ${esc(fl)}` : '') + hist + `</span>`;
+}
+function oosLine(x) {
+    // 표본 외 검증: 2021-11까지 통계로 본 방향이 2022년 이후에도 유지됐나(효과 1%p 이상인 유형만 표시)
+    const o = x.oos; if (!o || Math.abs(o.eff_tr) < 0.01) return '';
+    const same = Math.sign(o.eff_tr) === Math.sign(o.eff_te);
+    return `<br><span class="stat"><span class="tag ${same ? 'gray' : 'risk'}">${same ? '2022년 이후에도 같은 방향' : '2022년 이후 방향 반전'}</span> `
+        + `평균 공시 대비 20일: ~2021 ${pc(o.eff_tr)} (n=${o.n_tr}) → 2022~ ${pc(o.eff_te)} (n=${o.n_te})</span>`;
+}
+function feedStat(x) {
+    return feedStatBase(x) + oosLine(x) + contractLine(x.contract);
+}
+function feedStatBase(x) {
+    const st = x.stat;
+    if (!st) return x.valueup_cat ? `<span class="tag kosdaq">밸류업 · ${esc(x.valueup_cat)}</span> <small>기업 리포트에서 범주 통계 확인</small>` : '<span class="muted">통계 없음</span>';
+    return `<span class="stat">발표 ${pc(st.ann2)}${st.ann2_sig ? '<span class="sig">★</span>' : ''} · 20일 중앙 ${pc(st.d20_med)}${st.d20_sig ? '<span class="sig">★</span>' : ''}`
+        + ` · 위약 대비 20일 ${pc(x.d20_net)} · 상승 ${pc0(st.hit20)} · n=${st.n}`
+        + (x.stat_same_market ? '' : ` <span class="tag gray">${esc(x.stat_src)} 기준</span>`) + `</span>`;
+}
+function renderFeed(d) {
+    const c = d.counts || {}, t = c.tier || {};
+    const label = {1: ['주의', '위험 키워드(거래정지·관리종목·상장폐지·회생·횡령 등) 또는 희석성 자금조달'],
+                   2: ['과거 반응이 유의한 유형', '같은 유형 공시가 과거에 다중검정 보정 후에도 유의한 반응'],
+                   3: ['일반', '통계가 없거나 유의하지 않은 공시'],
+                   4: ['일상 공시', '과거 반응이 작고 유의하지 않은 정기·절차 공시, 정정 공시']};
+    const fd = s => `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+    const rows = tier => (d.items || []).filter(x => x.tier === tier).map(x => `<tr>
+        <td><span class="tag ${x.market === 'KOSDAQ' ? 'kosdaq' : 'kospi'}">${esc(x.market)}</span></td>
+        <td class="co" data-code="${esc(x.stock_code)}" data-name="${esc(x.corp_name)}">${esc(x.corp_name)}</td>
+        <td><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.report_nm)}</a>
+            ${(x.risk_tags || []).map(w => `<span class="tag risk">${esc(w)}</span>`).join(' ')}${x.dilutive ? ' <span class="tag dil">희석성</span>' : ''}</td>
+        <td>${feedStat(x)}</td></tr>`).join('');
+    const block = tier => {
+        const n = t[tier] || 0; if (!n) return '';
+        if (tier === 4 && !feedShowRoutine) return `<div class="feed-tier">${label[4][0]} ${n}건 <small>· ${label[4][1]}</small>
+            <button class="chip" id="fRoutine" style="margin-left:8px;">펼치기</button></div>`;
+        return `<div class="feed-tier">${label[tier][0]} ${n}건 <small>· ${label[tier][1]}</small></div>
+            <div class="tablewrap feed-table"><table><thead><tr><th>시장</th><th>기업</th><th>공시</th><th>같은 유형의 과거 시장 반응 (★ 보정 후 유의)</th></tr></thead><tbody>${rows(tier)}</tbody></table></div>`;
+    };
+    const missing = Object.entries(d.stats_loaded || {}).filter(([, v]) => !v).map(([k]) => k === 'I' ? '거래소공시' : '주요사항보고');
+    $('pFeed').innerHTML = `<div class="card">
+        <div class="cardhead"><div><h2>오늘의 공시 · ${esc(fd(d.date))}</h2><small>코스피·코스닥 상장사 주요사항보고 + 거래소공시 · 생성 ${esc(d.generated)}</small></div>
+        <div class="chips">${(d.dates || []).map(x => `<button class="chip ${x === d.date ? 'active' : ''}" data-fdate="${x}">${fd(x).slice(5)}</button>`).join('')}</div></div>
+        <div class="kpis" style="margin:8px 0 0;">
+          <div class="kpi"><small>전체</small><div class="num mono" style="font-size:24px;">${c.total || 0}</div><small>코스피 ${c.kospi || 0} · 코스닥 ${c.kosdaq || 0}</small></div>
+          <div class="kpi"><small>주의</small><div class="num mono" style="font-size:24px; color:#dc2626;">${t[1] || 0}</div><small>위험 키워드 · 희석성</small></div>
+          <div class="kpi"><small>과거 반응 유의</small><div class="num mono" style="font-size:24px;">${t[2] || 0}</div><small>보정 후 유의한 유형</small></div>
+          <div class="kpi"><small>일상 공시(접힘)</small><div class="num mono" style="font-size:24px; color:#94a3b8;">${t[4] || 0}</div><small>읽을 필요가 적은 공시</small></div></div>
+        ${missing.length ? `<p style="margin-top:10px; font-size:12px; color:#94a3b8;">${missing.join('·')} 반응 통계는 아직 계산 전입니다(해당 공시는 '통계 없음'으로 표시).</p>` : ''}
+        ${[1, 2, 3, 4].map(block).join('')}
+        <p style="margin-top:14px; font-size:12px; color:#94a3b8;">통계는 같은 유형 공시들의 과거 평균적 반응(시장 동일가중 대비)이며 개별 공시의 미래 주가 예측이 아닙니다. 기업명을 누르면 기업 리포트로 이동합니다. ${esc(d.disclaimer)}</p></div>`;
+    document.querySelectorAll('[data-fdate]').forEach(b => b.onclick = () => loadFeed(b.dataset.fdate));
+    document.querySelectorAll('.feed-table .co').forEach(td => td.onclick = () => {
+        setPMode('company'); $('pQuery').value = td.dataset.name; loadCompany(td.dataset.code || td.dataset.name); });
+    const rb = $('fRoutine'); if (rb) rb.onclick = () => { feedShowRoutine = true; renderFeed(feedData); };
+}
+
+async function loadCompany(q) {
+    if (!q) return;
+    $('pBody').innerHTML = `<div class="card"><h2>${esc(q)} 리포트 생성 중…</h2><div class="loading-steps">
+        ① 가격·재무 패널 조회 → ② DART 공시 1년치 + 주요사항 3년치 → ③ 공시 유형별 과거 반응 통계 매칭 →
+        ④ 뉴스 30일 + 감성사전 → ⑤ 위험 신호·요약<br><small>처음 조회하는 기업은 20~40초 걸릴 수 있습니다(이후 캐시).</small></div></div>`;
+    try {
+        const r = await fetch(`${BRIDGE_URL}/api/company?q=${encodeURIComponent(q)}&llm=${$('pLlm').checked ? 1 : 0}`);
+        const d = await r.json();
+        if (!d.ok) { $('pBody').innerHTML = `<div class="empty">${esc(d.error || '오류')}</div>`; return; }
+        renderCompany(d);
+    } catch (e) {
+        $('pBody').innerHTML = `<div class="empty">브릿지 서버에 연결할 수 없습니다 - 터미널에서 <b>python econ_lab_bridge.py</b> 실행 후 다시 시도하세요.</div>`;
+    }
+}
+
+function lineChart(series) {
+    const pts = series.filter(p => p.c && p.i); if (pts.length < 2) return '<div class="empty">가격 데이터 부족</div>';
+    const s0 = pts[0].c, i0 = pts[0].i, a = pts.map(p => p.c / s0 * 100), b = pts.map(p => p.i / i0 * 100);
+    const lo = Math.min(...a, ...b), hi = Math.max(...a, ...b), W = 600, H = 200;
+    const xy = arr => arr.map((v, k) => `${(k / (arr.length - 1) * W).toFixed(1)},${(H - (v - lo) / (hi - lo || 1) * H).toFixed(1)}`).join(' ');
+    return `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="주가와 지수 1년 추이(시작=100)">
+        <polyline points="${xy(b)}" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+        <polyline points="${xy(a)}" fill="none" stroke="#3b82f6" stroke-width="2"/></svg>
+        <small><span style="color:#3b82f6">━</span> 종목 <span style="color:#94a3b8">━</span> 지수 (1년, 시작=100) · ${esc(pts[0].d)} ~ ${esc(pts[pts.length - 1].d)}</small>`;
+}
+
+/* 10-22 분기 실적 + 실적 발표 뒤 시장 반응(사전 등록 H-2026-10-R: 코스닥 60일 상위-하위 10% +5.9%, t 5.1) */
+function earningsCard(e) {
+    if (!e || !(e.quarters || []).length) return '';
+    const rows = e.quarters.map(q => `<tr><td class="mono">${esc(q.q)}</td><td class="mono">${krw(q.rev)}</td><td class="mono">${krw(q.op)}</td>
+        <td class="mono">${q.rev_yoy == null ? '—' : pc(q.rev_yoy)}</td><td class="mono">${esc(q.filed || '')}</td></tr>`).join('');
+    const sue = e.decile ? `<p style="margin:10px 0 0; font-size:13px; line-height:1.7;">최근 보고서(${esc(e.filed)} 접수) 실적 서프라이즈:
+        최근 90일 접수 기업 중 <b>10분위 ${e.decile}</b> → 과거 같은 분위는 접수 다음 날부터 <b>60거래일 시장 대비 ${pc(e.d60)}</b>, 20거래일 ${pc(e.d20)}
+        <small>(상위 10% ${pc(e.top60)} · 하위 10% ${pc(e.bot60)}, 2017~ ${(e.n_events || 0).toLocaleString()}건, 사전 등록 검정 통과)</small></p>`
+        : '<p class="muted" style="font-size:13px;">서프라이즈 계산에 필요한 분기 이력(8분기 중 4개)이 부족</p>';
+    return `<article class="card"><div class="cardhead"><h2>분기 실적 · 발표 뒤 시장 반응</h2><small>DART 분기·반기·사업보고서, 4분기 = 연간 - 3분기 누적</small></div>
+        <div class="tablewrap"><table><thead><tr><th>분기</th><th>매출</th><th>영업이익</th><th>매출 YoY</th><th>접수일</th></tr></thead><tbody>${rows}</tbody></table></div>${sue}</article>`;
+}
+
+function renderCompany(d) {
+    const c = d.company, p = d.price, f = d.financials || [], flags = d.risk_flags || [];
+    const nHit = flags.filter(x => x.hit).length;
+    const kpi = (label, val, sub, color) => `<div class="kpi"><small>${label}</small><div class="num mono" style="color:${color || '#0f172a'}; font-size:26px;">${val}</div><small>${sub || ''}</small></div>`;
+    // 통계·밸류업·규모 정보가 붙은 공시는 항상 표시, 나머지는 최신순으로 채워 최대 30건
+    const discAll = (d.disclosures || []).filter(x => !x.amendment);
+    const keyDisc = discAll.filter(x => x.stat || x.valueup || x.size_info || x.contract);
+    const restDisc = discAll.filter(x => !(x.stat || x.valueup || x.size_info || x.contract)).slice(0, Math.max(0, 30 - keyDisc.length));
+    const discShown = [...keyDisc, ...restDisc].sort((a, b) => String(b.rcept_dt).localeCompare(String(a.rcept_dt)));
+    const discRows = discShown.map(x => {
+        const st = x.stat; let s = '<span class="muted">통계 없음</span>';
+        if (st) s = `<span class="stat">발표 ${pc(st.ann2)}${st.ann2_sig ? '<span class="sig">★</span>' : ''} (중앙 ${pc(st.ann2_med)}) · 20일 중앙 ${pc(st.d20_med)} · 위약 대비 20일 평균 ${pc(x.d20_net)} · 상승 ${pc0(st.hit20)} · n=${st.n}${x.stat_same_market ? '' : ` <span class="tag gray">${esc(x.stat_src)} 기준</span>`}</span>`;
+        const vu = x.valueup;
+        if (vu && vu.stat) { const g = vu.stat;
+            s = `<span class="stat"><span class="tag kosdaq">밸류업 · ${esc(vu.category)}</span> 과거 ${esc(vu.src)} 같은 범주 n=${g.n}: 발표 ${pc(g.ann2)} · 20일 중앙 ${pc(g.d20_med)} · `
+              + `동시점·동규모 비공시 기업 대비 20일 ${pc(g.d20_m)}, 60일 ${pc(g.d60_m)}${g.d60_m_sig ? '<span class="sig">★</span>' : ''}`
+              + (x.valueup_note ? ` <small>(${esc(x.valueup_note)})</small>` : '') + `</span>`;
+            const pl = vu.plan;
+            if (pl) { const t = [];
+                if (pl.roe_t != null) t.push(`ROE 목표 ${pl.roe_t}%`); if (pl.ret_t != null) t.push(`주주환원율 목표 ${pl.ret_t}%`);
+                if (pl.payout_t != null) t.push(`배당성향 목표 ${pl.payout_t}%`); if (pl.pbr_t != null) t.push(`PBR 목표 ${pl.pbr_t}배`);
+                if (pl.cancel) t.push(pl.cancel_all ? '자사주 전량 소각' : '자사주 소각 언급'); if (pl.qdiv) t.push('분기·중간배당');
+                const gs = pl.group_stat;
+                s += `<br><span class="stat">계획 내용: ${t.length ? esc(t.join(' · ')) : '요약본에 숫자 목표 없음' + (pl.attach_only ? '(첨부 문서 참조형)' : '')}`
+                   + (gs ? ` → 과거 '${esc(pl.group)}' 계획 n=${gs.n}: 대조 차감 20일 ${pc(gs.d20_mnet)} (중앙 ${pc(gs.d20_mnet_med)})`
+                         + (gs.d20_mnet_sig ? '' : ' <small>· 계획 내용별 차이는 통계적으로 유의하지 않음(참고용)</small>') : '') + `</span>`; }
+        }
+        const si = x.size_info;
+        if (si) {
+            const bs = si.bucket_stat, ms = si.method_stat;
+            s += `<br><span class="stat">이번 공시 규모: ${esc(si.size_def)} ${si.size == null ? '—' : (si.size * 100).toFixed(1) + '%'}`
+               + (si.bucket ? ` → 과거 <b>${esc(si.bucket)}</b> 구간` : '')
+               + (bs ? ` (n=${bs.n}, 20일 중앙 ${pc(bs.d20_med)}, 상승 ${pc0(bs.hit20)}, 60일 ${pc(bs.d60)}${bs.d60_sig ? '<span class="sig">★</span>' : ''})` : '')
+               + (si.method ? ` · 방식 ${esc(si.method)}` + (ms ? ` (n=${ms.n}, 20일 중앙 ${pc(ms.d20_med)})` : '') : '')
+               + `</span>`;
+        }
+        s += oosLine(x) + contractLine(x.contract);
+        return `<tr><td class="mono">${esc(x.rcept_dt)}</td><td><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.report_nm)}</a></td><td>${s}</td></tr>`;
+    }).join('') || '<tr><td colspan="3" class="muted">최근 1년 회사 공시 없음' + (d.disclosure_error ? ` (DART 오류: ${esc(d.disclosure_error)})` : '') + '</td></tr>';
+    const finRows = [['매출액', 'revenue', krw], ['영업이익', 'operating_income', krw], ['순이익', 'net_income', krw],
+        ['영업이익률', 'operating_margin', pc0], ['ROE', 'roe', pc0], ['부채비율', 'debt_ratio', pc0]]
+        .map(([l, k, fn]) => `<tr><td>${l}</td>${f.map(y => `<td class="mono">${fn(y[k])}</td>`).join('')}</tr>`).join('');
+    const peerNames = {per: 'PER', pbr: 'PBR', roe: 'ROE', operating_margin: '영업이익률', debt_ratio: '부채비율', revenue_growth: '매출성장률'};
+    const peers = d.peers ? Object.entries(d.peers.metrics).map(([k, m]) => `<div style="margin:12px 0;">
+        <div style="display:flex; justify-content:space-between;"><b style="font-size:13px;">${peerNames[k] || k}</b>
+        <small>${['per', 'pbr'].includes(k) ? m.value.toFixed(1) + '배' : pc0(m.value)} · 업종 중앙 ${['per', 'pbr'].includes(k) ? m.peer_median.toFixed(1) + '배' : pc0(m.peer_median)} · ${m.better === 'low' ? '낮을수록 유리' : '높을수록 유리'}, 업종 내 값 백분위 ${(m.pct * 100).toFixed(0)}</small></div>
+        <div class="pbar"><b></b><i style="left:${(m.pct * 100).toFixed(0)}%"></i></div></div>`).join('') : '<div class="muted">동종업계 데이터 없음</div>';
+    const news = (d.news || []).filter(n => n.title).slice(0, 20).map(n => `<tr><td class="mono">${esc(n.published.slice(5, 10))}</td>
+        <td><a href="${esc(n.link)}" target="_blank" rel="noopener">${esc(n.title)}</a> <small>${esc(n.source)}</small></td>
+        <td class="${n.sent > 0 ? 'sent-pos' : n.sent < 0 ? 'sent-neg' : 'muted'}">${n.sent > 0 ? '+' : ''}${n.sent}</td></tr>`).join('') || '<tr><td colspan="3" class="muted">뉴스 없음</td></tr>';
+    $('pBody').innerHTML = `
+    <div class="card" style="margin-top:8px;"><div class="cardhead"><div>
+        <h1 style="font-size:24px;">${esc(c.name)} <span class="tag ${c.market === 'KOSDAQ' ? 'kosdaq' : 'kospi'}">${esc(c.market)}</span> <span class="tag gray mono">${esc(c.stock_code)}</span></h1>
+        <small>${p.withheld ? '' : `기준일 ${esc(p.last_date)} · `}생성 ${esc(d.generated)} · 업종코드 ${esc(c.industry_code)}</small></div>
+        ${p.withheld ? `<div style="text-align:right;"><small>공개판: 시세 미표시</small></div>` : `<div style="text-align:right;"><div class="num mono" style="font-size:24px; font-weight:800;">${fmt(p.close)}원</div><small>시가총액 ${krw(p.market_cap)}</small></div>`}</div>
+        <div class="kpis" style="margin:8px 0 0;">${p.withheld
+            ? kpi('위험 신호', `${nHit} / ${flags.length}`, '규칙 기반 점검(공시·재무)', nHit ? '#dc2626' : '#16a34a') + `<div class="empty" style="grid-column:span 3;">${esc(p.note)}</div>`
+            : `${kpi('3개월 수익률', pc(p.ret_3m), `지수 ${pc(p.idx_3m)}`)}${kpi('1년 수익률', pc(p.ret_1y), `지수 ${pc(p.idx_1y)}`)}
+        ${kpi('연환산 변동성(60일)', pc0(p.vol_60), `20일 평균 거래대금 ${krw(p.adv_20)}`)}${kpi('위험 신호', `${nHit} / ${flags.length}`, '규칙 기반 점검', nHit ? '#dc2626' : '#16a34a')}`}</div></div>
+    <div class="p-grid">
+      <article class="card brief p-full"><div class="cardhead"><span class="eyebrow">${d.summary_ai ? 'AI SUMMARY · 계산된 사실만 사용' : 'FACT SUMMARY · 규칙 기반'}</span></div>
+        <p style="max-width:none; font-size:15px; line-height:1.8;">${esc(d.summary_ai || d.summary_facts)}</p>
+        <p style="margin-top:12px; font-size:12px; color:#94a3b8;">${esc(d.disclaimer)}</p></article>
+      <article class="card"><div class="cardhead"><h2>주가 vs 지수</h2></div>${p.withheld ? `<div class="empty">${esc(p.note)}</div>` : lineChart(p.series || [])}</article>
+      <article class="card"><div class="cardhead"><h2>위험 신호 체크리스트</h2><span class="tag gray">투명 규칙</span></div>
+        ${flags.map(x => `<div class="flag ${x.hit ? 'hit' : 'ok'}"><span class="dot">${x.hit ? '!' : '✓'}</span><div><b style="font-size:13px;">${esc(x.label)}</b><br>
+        <small>기준: ${esc(x.rule)} · 값: ${esc(x.display ?? x.value)}</small></div></div>`).join('')}
+        <small>내부자·주주 지분보고 최근 1년 ${d.insider_filings_1y ?? 0}건(참고)</small></article>
+      <article class="card p-full"><div class="cardhead"><h2>최근 1년 공시 + 같은 유형의 과거 시장 반응</h2><small>통계가 붙은 공시 ${keyDisc.length}건 전부 + 최근 공시 · 전체 ${discAll.length}건</small>
+        <span class="tag gray">발표=공시 전일~익일 종가, 20일=익일 시가 진입 후 20거래일, 시장 동일가중 대비 초과수익</span></div>
+        <div class="tablewrap disc-table"><table><thead><tr><th>접수일</th><th>공시</th><th>과거 반응 통계 (★ 다중검정 보정 후 유의)</th></tr></thead><tbody>${discRows}</tbody></table></div></article>
+      <article class="card"><div class="cardhead"><h2>재무 추이</h2><small>DART 사업보고서 기준</small></div>
+        <div class="tablewrap"><table><thead><tr><th></th>${f.map(y => `<th>${y.fiscal_year}</th>`).join('')}</tr></thead><tbody>${finRows}</tbody></table></div></article>
+      ${earningsCard(d.earnings)}
+      <article class="card"><div class="cardhead"><h2>동종업계 내 위치</h2><small>업종 ${esc(d.peers ? d.peers.industry2 : '')} · ${d.peers ? d.peers.n_peers : 0}개사, 회색선=업종 중앙</small></div>${peers}</article>
+      <article class="card p-full"><div class="cardhead"><h2>최근 30일 뉴스 · 논조</h2><small>구글 뉴스 제목 + KNU 감성사전(+긍정 / −부정), 본문 미저장</small></div>
+        <div class="tablewrap"><table><thead><tr><th>날짜</th><th>제목</th><th>논조</th></tr></thead><tbody>${news}</tbody></table></div></article>
+    </div>`;
+}
+
+/* ---- 사이드바 = 모드 전환 ---- */
+document.querySelectorAll('.sidebar a[data-pnav]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); setPMode(a.dataset.pnav); window.scrollTo(0, 0); }));
+
+/* ---- 소상공인 공정신용 진단 (신용캐드, caed/service.py) ---- */
+let caedReady = false;
+const CAED_FIELDS = [
+    ['sales_b', '연매출 (억원)', 1.5], ['cash_pct', '현금성자산비율 (%)', 30], ['equity_pct', '자기자본비율 (%)', 80],
+    ['current_pct', '유동비율 (%)', 300], ['icr', '이자보상배율 (배)', 1.2], ['turnover', '총자산회전율 (회)', 0.7],
+    ['growth_pct', '자기자본증가율 (%)', 8], ['loan_b', '희망 대출 (억원)', 1.0], ['age_y', '업력 (년)', 2], ['area_m2', '면적 (㎡)', 200]];
+function renderCaedForm() {
+    caedReady = true;
+    $('pCaed').innerHTML = `<div class="card"><h2>소상공인 공정신용 진단</h2>
+      <p style="margin-top:6px;">같은 재무정보를 두 번 평가합니다. 은행식 <b>전통 점수</b>와, 매출에 섞인 규모·경기 영향을 도구변수로 걷어 낸 <b>공정 점수</b>.
+      가까운 역·상권과 업종을 넣으면 서울 상권 실측(추정매출·폐업률·포화도)을 반영한 세 번째 점수와 업종 연체율(한국은행)을 함께 보여줍니다.</p>
+      <div class="caed-form">${CAED_FIELDS.map(([k, l, v]) => `<label>${esc(l)}<input id="c_${k}" type="number" step="any" value="${v}"></label>`).join('')}
+        <label>업종<input id="c_industry" value="헬스장" placeholder="헬스장, 카페, 미용실 …"></label>
+        <label>가까운 역·상권<input id="c_store" value="성신여대입구역" placeholder="예: 신림역"></label></div>
+      <div class="chips" style="margin-top:14px;">
+        <button class="chip" id="cDemoA">시연 A 재무안정형</button><button class="chip" id="cDemoB">시연 B 성장현금형</button>
+        <button class="primary" id="cGo">진단하기</button></div>
+      <div id="cOut"></div></div><div id="cGym" style="margin-top:16px;"></div>`;
+    loadGym();
+    const setv = o => Object.entries(o).forEach(([k, v]) => { const el = $('c_' + k); if (el) el.value = v; });
+    $('cDemoA').onclick = () => setv({sales_b: 1.5, cash_pct: 30, equity_pct: 80, current_pct: 300, icr: 1.2, turnover: 0.7, growth_pct: 8});
+    $('cDemoB').onclick = () => setv({sales_b: 1.5, cash_pct: 35, equity_pct: 56, current_pct: 110, icr: 1.4, turnover: 0.8, growth_pct: 30});
+    $('cGo').onclick = runCaed;
+}
+/* 10-20 신용캐드 실데이터 검증 - 서울 인허가 10개 업종의 실제 폐업으로 '작고 젊으면 위험한가', '상권이 보탬이 되나'를 사전 등록 후 채점 */
+async function loadGym() {
+    try {
+        const d = await (await fetch(`${BRIDGE_URL}/api/gym`)).json();
+        if (!d.ok) { $('cGym').innerHTML = ''; return; }
+        const pct = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+        const n = d.industries.reduce((a, r) => a + r.n_firms, 0);
+        const rows = [...d.industries].sort((a, b) => b.n_firms - a.n_firms).map(r => `<tr><td>${esc(r.name)}</td><td class="mono">${r.n_firms.toLocaleString('ko-KR')}</td>
+            <td class="mono">${pct(r.base)}</td><td class="mono">${pct(r.young)}</td><td class="mono">${pct(r.old)}</td>
+            <td class="mono">${pct(r.q1)}</td><td class="mono">${pct(r.q5)}</td><td class="mono">${r.coverage == null ? '—' : Math.round(r.coverage * 100) + '%'}</td></tr>`).join('');
+        const loc = d.location.map(l => `<tr><td>${esc(l.name)}</td><td class="mono">${l.auc_b.toFixed(3)} → ${l.auc_e.toFixed(3)}</td>
+            <td class="mono">${pct(l.top_b)} → ${pct(l.top_e)}</td></tr>`).join('');
+        $('cGym').innerHTML = `<div class="card"><div class="cardhead"><div><h2>실데이터 검증 · 서울 소상공인 ${n.toLocaleString('ko-KR')}곳의 실제 폐업</h2>
+          <small>${esc(d.source)} · 매년 말 영업 중 업소의 12개월 안 폐업률(2021~24) · 가설은 결과 전에 등록 · ${esc(d.asof)}</small></div><span class="tag kosdaq">실측</span></div>
+          <p style="margin-top:8px;"><b>대부분 업종에서 젊고 작은 가게가 실제로 더 문을 닫는다.</b> 헬스장 한 업종에서 본 '업력이 짧아도 안전'은 일반화되지 않았다
+            (사전 가설 3개 모두 기각: 업력 ${d.I.I1[0]}/${d.I.I1[1]}, 큰 곳이 가장 안전 ${d.I.I2[0]}/${d.I.I2[1]}, 소형 과잉 경고 ${d.I.I3[0]}/${d.I.I3[1]}).</p>
+          <div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th>업종</th><th>업소</th><th>폐업률</th><th>업력 1년 미만</th><th>10년+</th>
+            <th>면적 하위 20%</th><th>상위 20%</th><th>대장 포착률</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <p class="stat" style="margin-top:8px;">대장 포착률 = 인허가 대장 폐업 / 서울 상권분석 폐업(2023). 헬스장(17%)처럼 낮은 업종은 양도·방치가 폐업으로 안 잡혀 결과를 믿기 어렵다.</p>
+          <p style="margin-top:14px;"><b>상권 정보는 위험 상위권만 조금 더 날카롭게 한다.</b> 반경 100m 밀집도·주변 개폐업·자치구 폐업률을 더하면 상위 10% 경고의 실제 폐업률은
+            올랐지만 전체 순위(AUC)는 거의 그대로였다(사전 가설 L1 ${d.L1}/3 기각, L2 ${d.L2}/3 성립) → 상권 반영 점수는 '참고'로 낮췄다.</p>
+          <div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th>업종</th><th>AUC 기본 → +상권</th><th>상위 10% 실제 폐업률</th></tr></thead><tbody>${loc}</tbody></table></div>
+          <p style="margin-top:14px;"><b>동네 매출 흐름도 폐업을 거의 못 가른다.</b> 서울 상권분석 추정매출로 최근 1년 매출이 가장 줄어든 동네·업종 20%의 다음 1년 폐업률은 10.5%, 가장 늘어난 20%는 9.7%(1.08배) — 사전 가설 S1·S2 기각.</p>
+          <p class="stat" style="margin-top:10px;">결론: 공개 데이터만으로는 소상공인 폐업을 잘 가려내지 못한다(AUC 0.56~0.62). 업종마다 위험의 모양이 달라 한 가지 규칙은 틀리고,
+            실제 영업 흐름(카드매출·계좌 현금흐름) 데이터가 필요하다 — 젊은 사업자 신용 연구(Hair·Howell 외, NBER 2025)와 같은 방향. 그래서 파일럿을 한다.</p>
+        </div>${brandCard(d.franchise || {})}${survivalCard(d.survival)}`;
+        if ($('bGo')) { $('bGo').onclick = runBrand; $('bq').onkeydown = e => { if (e.key === 'Enter') runBrand(); }; }
+    } catch (e) { $('cGym').innerHTML = ''; }
+}
+/* 10-20 브랜드 건강도 - 가맹점 폐업을 브랜드와 브랜드 성장·쇠퇴로 본 실데이터 결과(caed/franchise_survival.py). 브랜드 이름은 판정 전 비공개 */
+function brandCard(fr) {
+    const rows = Object.values(fr);
+    if (!rows.length) return '';
+    const pc = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+    return `<div class="card" style="margin-top:16px;"><div class="cardhead"><div><h2>브랜드 건강도 · 가맹점의 위험은 브랜드가 가른다</h2>
+      <small>서울 인허가 상호에서 브랜드 추정 · 다음 1년 폐업률(2021~24) · 카페로 먼저 사전 등록, 음식점으로 재현</small></div><span class="tag kosdaq">실측</span></div>
+      <div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th>업종</th><th>업소</th><th>프랜차이즈</th><th>독립</th><th>쇠퇴 브랜드 1/3</th><th>성장 브랜드 1/3</th><th>예측력(AUC) +브랜드</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="mono">${r.n.toLocaleString('ko-KR')}</td><td class="mono"><b>${pc(r.franchise)}</b></td><td class="mono">${pc(r.independent)}</td>
+        <td class="mono"><b>${pc(r.decline)}</b></td><td class="mono">${pc(r.growth)}</td><td class="mono">${r.auc.base.toFixed(3)} → <b>${r.auc.brand.toFixed(3)}</b></td></tr>`).join('')}</tbody></table></div>
+      <p style="margin-top:10px;">직전 1년 서울에서 매장이 줄어든 브랜드의 가맹점은 다음 해에 훨씬 많이 닫았다 — 학습기(2014~19)와 검증 기간(2021~24) 모두. 은행 '프랜차이즈론'은 브랜드 안정성을 심사하는데,
+        지금 쓰이는 브랜드 통계는 가맹본부가 1년 늦게 스스로 내는 정보공개서다. 공공 기록으로 매달 갱신하는 독립된 브랜드 건강도가 그 빈자리다.</p>
+      <p class="stat">오늘 기준 브랜드 473개의 성장·쇠퇴 3분위를 이름 대신 해시로 봉인(H-2026-10-D), 2027-10 채점. 한계: 대장은 양도를 폐업으로 못 잡는다 · 상호 기반 브랜드 추정.</p>
+      <div class="chips" style="margin-top:12px;"><input id="bq" placeholder="브랜드 이름 (예: 치킨·커피 브랜드)" style="flex:1; min-width:180px; padding:10px 12px;">
+        <button class="primary" id="bGo">브랜드 건강도 조회</button></div><div id="bOut"></div></div>`;
+}
+/* 10-25 실측 생존율 공개판(caed/survival_audit.py) - 정보공개서 신설 항목(장기운영·생존율·폐점 평균 영업기간)과 같은 모양을 공공 인허가로. 브랜드 이름 없음 */
+function survivalCard(s) {
+    if (!s) return '';
+    const pc = v => v == null ? '—' : (v * 100).toFixed(1) + '%', yr = v => v == null ? '—' : v.toFixed(1) + '년';
+    const dist = (d, f) => d ? d.map(f).join(' / ') : '—';
+    const rows = Object.values(s.industries).map(r => ['franchise', 'independent'].map(k => { const v = r[k];
+        return `<tr><td>${esc(r.label)} · ${k === 'franchise' ? '가맹' : '독립'}</td><td class="mono">${v.stores.toLocaleString('ko-KR')}</td><td class="mono">${pc(v.long5)}</td>
+          <td class="mono">${pc(v.surv1)} <small>n=${v.n1.toLocaleString('ko-KR')}</small></td><td class="mono"><b>${pc(v.surv3)}</b> <small>n=${v.n3.toLocaleString('ko-KR')}</small></td><td class="mono">${yr(v.closed_avg_years)}</td></tr>`; }).join('')
+        + `<tr><td><small>${esc(r.label)} · 브랜드 ${r.n_brands}개 분포(하위10%/중앙/상위10%)</small></td><td></td><td class="mono"><small>${dist(r.brand_dist.long5, pc)}</small></td><td></td>
+          <td class="mono"><small>${dist(r.brand_dist.surv3, pc)}</small></td><td class="mono"><small>${dist(r.brand_dist.closed_avg_years, yr)}</small></td></tr>`).join('');
+    const trend = Object.values(s.industries).map(r => `${esc(r.label)} 독립 ` + Object.entries(r.first_year_by_open_year.independent).filter(([y]) => +y % 2 === 1 || +y >= 2022).map(([y, v]) => `${y} ${pc(v)}`).join(' · ')).join('<br>');
+    return `<div class="card" style="margin-top:16px;"><div class="cardhead"><div><h2>실측 생존율 공개판 · 본부 신고 전에 공공 기록으로 먼저</h2>
+      <small>정보공개서 신설 항목(장기운영 가맹점 비율 · 가맹점 생존율 · 폐점 평균 영업기간)과 같은 모양 · 서울 인허가 · 우리 근사 정의 · ${esc(s.asof)}</small></div><span class="tag kosdaq">실측</span></div>
+      <div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th>구분</th><th>영업 중</th><th>장기운영(5년+)</th><th>1년 생존</th><th>3년 생존</th><th>폐점 평균 영업</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p style="margin-top:10px;">가맹점은 3년을 버티는 비율이 독립점보다 높지만, 브랜드끼리는 차이가 크다. 본부가 정보공개서에 생존율을 적기 시작하면 브랜드별로 이 실측과 나란히 대조할 수 있다(이름별 대조는 로컬 전용).</p>
+      <p class="stat">주의 — 개업 연도별 첫해 폐업률이 최근 크게 올랐다: ${trend}. 실제 변화인지 양도(지위승계)·업종 전환이 폐업으로 잡힌 것인지는 아직 가리지 못했다. 한계: 상호 기반 브랜드 추정 · 서울만.</p></div>`;
+}
+async function runBrand() {
+    const q = $('bq').value.trim();
+    $('bOut').innerHTML = `<div class="loading-steps">조회 중…</div>`;
+    try {
+        const d = await (await fetch(`${BRIDGE_URL}/api/brand?q=${encodeURIComponent(q)}`)).json();
+        if (!d.ok) { $('bOut').innerHTML = `<div class="empty">${esc(d.error || '오류')}</div>`; return; }
+        if (d.public) { $('bOut').innerHTML = `<div class="empty">공개판: 브랜드 이름은 사전 등록 판정(2027-10) 전까지 공개하지 않습니다. 현재 3분위 브랜드 수 ${Object.entries(d.tier_counts).map(([k, v]) => `${esc(k)} ${v}`).join(' · ')}</div>${founderSheet(null, d)}`; return; }
+        if (!d.hits.length) { $('bOut').innerHTML = `<div class="empty">서울 매장 10곳 이상인 외식 브랜드 중 일치하는 이름이 없습니다.</div>`; return; }
+        const pc = v => (v * 100).toFixed(1) + '%';
+        const spark = s => { const mx = Math.max(...s), mn = Math.min(...s), w = 160, h = 36;
+            const pts = s.map((v, i) => `${(i / (s.length - 1) * w).toFixed(1)},${(h - (mx === mn ? h / 2 : (v - mn) / (mx - mn) * h)).toFixed(1)}`).join(' ');
+            return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="#2563eb" stroke-width="2"/></svg>`; };
+        const col = t => t === '쇠퇴' ? '#dc2626' : t === '성장' ? '#059669' : '#6b7280';
+        $('bOut').innerHTML = `<div class="tablewrap" style="margin-top:10px;"><table><thead><tr><th>브랜드</th><th>업종</th><th>서울 매장</th><th>최근 12개월 개업/폐업</th><th>3분위</th><th>가맹점 1년 폐업률</th><th>매장 수 36개월</th></tr></thead><tbody>${
+            d.hits.map(h => `<tr><td>${esc(h.brand)}</td><td>${esc(h.industry)}</td><td class="mono">${h.stores}</td><td class="mono">+${h.open_12m} / -${h.close_12m}</td>
+              <td><b style="color:${col(h.tier)}">${esc(h.tier)}</b></td><td class="mono">${pc(h.close_rate_12m)} <small>(업종 ${pc(h.industry_close_12m)})</small></td><td>${spark(h.series)}</td></tr>`).join('')}</tbody></table></div>
+          <p class="stat">${esc(d.evidence)} · 기준 ${esc(d.asof)} · 서울 인허가 상호 기반 추정 · 내부 시연용(공개판에서는 이름 비공개)</p>${founderSheet(d.hits[0], d)}`;
+    } catch (e) { $('bOut').innerHTML = `<div class="empty">서버 연결 실패</div>`; }
+}
+/* 10-24 예비 창업자 1페이지 - '이 간판으로 지금 열면'. 중심은 검증된 국면 신호(H-2026-10-N), 브랜드별 첫해 폐업률은 참고·미검증(H-2026-10-P 보류) */
+function founderSheet(h, d) {
+    const ns = d.newstore; if (!ns) return '';
+    const pc = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+    const key = { '쇠퇴': 'low', '중간': 'mid', '성장': 'high' };
+    const row = (code, nm) => { const t = ns[code] && ns[code].test, r = ns[code] && ns[code].train; if (!t) return '';
+        const on = h && h.code === code ? key[h.tier] : null, b = k => on === k ? 'background:#fef3c7;' : '';
+        return `<tr><td>${nm}</td><td class="mono" style="${b('low')}"><b>${pc(t.low)}</b></td><td class="mono" style="${b('mid')}">${pc(t.mid)}</td><td class="mono" style="${b('high')}">${pc(t.high)}</td>
+          <td class="mono">${(t.low / Math.max(t.high, 1e-9)).toFixed(1)}배</td><td class="mono"><small>${pc(r.low)} / ${pc(r.high)}</small></td><td class="mono">${t.stores.toLocaleString('ko-KR')}</td></tr>`; };
+    const c = h && h.cohort, cd = d.cohort_def;
+    const own = !h ? '' : c && c.b ? `이 간판의 최근 개업 코호트(${esc(cd.b[0].slice(0, 7))}~${esc(cd.b[1].slice(0, 7))}) 첫해 폐업률 <b>${pc(c.b.rate)}</b> (n=${c.b.n})${c.a ? `, 그 전 코호트 ${pc(c.a.rate)} (n=${c.a.n})` : ''}
+          — <span style="color:#b45309;"><b>참고·미검증</b>: 브랜드별 비율이 다음 코호트를 맞히는지 검정했지만 표본 부족으로 판정 보류(H-2026-10-P)</span>`
+        : `이 간판의 개업 코호트 표본이 ${cd ? cd.min_n : 10}곳 미만 — 브랜드별 첫해 폐업률은 보여 주지 않습니다.`;
+    return `<div class="callout" style="margin-top:14px;"><b>예비 창업자 1페이지 · ${h ? `'${esc(h.brand)}' 간판으로 지금 열면` : '간판 국면별 신규 가맹점'}</b>
+      ${h ? `<p style="margin-top:6px;">지금 이 간판의 국면: <b>${esc(h.tier)}</b> (서울 ${esc(h.industry)}, 지난 12개월 순증가율 ${(h.growth * 100).toFixed(1)}%, 매장 ${h.stores}곳). 아래 표에서 노란 칸이 이 국면입니다.</p>` : ''}
+      <div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th>업종</th><th>쇠퇴 국면 간판</th><th>중간</th><th>성장 국면</th><th>쇠퇴/성장</th><th>2014~19 쇠퇴/성장</th><th>신규 가맹점</th></tr></thead>
+      <tbody>${row('072405', '카페')}${row('072404', '음식점')}</tbody></table></div>
+      <small>신규 가맹점의 개업 후 1년 안 폐업률 · 개업 직전 12개월 브랜드 순증가율 3분위 · 서울 인허가 2021~24 실측 · 사전 등록 H-2026-10-N 성립. 2014~19는 차이가 작다(1.1~1.2배) — 최근 국면의 근거.</small>
+      ${h ? `<p style="margin-top:8px;">${own}</p>` : ''}
+      <p class="stat" style="margin-top:6px;">간판 정보 제공이며 개인 신용평가·창업 권유가 아닙니다. 한계: 인허가 대장은 양도를 폐업으로 못 잡음 · 상호 기반 브랜드 추정 · 서울만.</p></div>`;
+}
+async function runCaed() {
+    const q = new URLSearchParams();
+    CAED_FIELDS.forEach(([k]) => q.set(k, $('c_' + k).value));
+    q.set('industry', $('c_industry').value); q.set('store_query', $('c_store').value);
+    $('cOut').innerHTML = `<div class="loading-steps">공정신용 모델 계산 → 상권 실측 조회(처음 1회 수십 초) …</div>`;
+    try {
+        const r = await fetch(`${BRIDGE_URL}/api/caed?${q}`); const d = await r.json();
+        if (!d.ok) { $('cOut').innerHTML = `<div class="empty">${esc(d.error || '오류')}</div>`; return; }
+        const card = (t, s, sub) => `<div class="kpi"><small>${t}</small><div class="num mono">${s.score}</div>
+            <small><b>${esc(s.grade)}</b> ${esc(s.label)}${s.rate_pct ? ` · 예시 금리 ${s.rate_pct}%` : ''}${sub ? ' · ' + sub : ''}</small></div>`;
+        const sk = d.sangkwon || {}, pr = sk.profitability, dl = d.industry_delinquency;
+        $('cOut').innerHTML = `<div class="scores3">${card('전통 점수 (은행식 OLS Probit)', d.traditional)}
+            ${card('공정 점수 (IV Probit, 규모·경기 편향 교정)', d.fair, `<span style="color:#0f766e;">${d.uplift >= 0 ? '+' : ''}${d.uplift}점</span>`)}
+            ${card('상권 반영 점수 (참고 · 공정 70% + 상권 30%)', d.context, d.context.used_sangkwon ? `상권 ${sk.score != null ? sk.score.toFixed(1) : '—'}점` : '상권 미반영')}</div>
+          ${d.context.evidence ? `<p class="stat" style="margin-top:6px;">상권 점수는 참고용: ${esc(d.context.evidence)}</p>` : ''}
+          ${(() => { const b = d.industry_benchmark; if (!b) return ''; const pc = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
+              return `<div class="callout" style="margin-top:12px;"><b>서울 동종 업소의 실제 폐업률 · ${esc(b.industry)}</b> (${b.n_firms.toLocaleString('ko-KR')}곳, ${esc(b.period)})<br>
+              업종 평균 <b>${pc(b.base)}</b>${b.age_bucket ? ` · 업력 ${esc(b.age_bucket)} <b>${pc(b.age_rate)}</b>` : ''}${b.size_bucket ? ` · 면적 ${esc(b.size_bucket)}(5분위, Q1 작음) <b>${pc(b.size_rate)}</b>` : ''}<br>
+              <small>업력별 ${Object.entries(b.by_age).map(([k, v]) => `${esc(k)} ${pc(v)}`).join(' · ')}${Object.keys(b.by_size).length ? ' | 면적별 ' + Object.entries(b.by_size).map(([k, v]) => `${esc(k)} ${pc(v)}`).join(' · ') : ''}
+              <br>${esc(b.caveat)} · 점수에는 넣지 않은 참고 정보 · ${esc(b.source)}</small></div>`; })()}
+          <p style="margin-top:12px;">예시 금리 기준 연 이자 차이: <b>${(d.interest_saving_won || 0).toLocaleString('ko-KR')}원</b></p>
+          ${pr ? `<p class="stat">상권 수익성: ${esc(pr.basis)} · 평균 매출 ${krw(pr.avg_sales_won)}원 · ${pr.score.toFixed(1)}점</p>` : ''}
+          ${dl ? `<p class="stat">업종 연체율(${esc(dl.ksic)}, ${dl.year}, 차주수 기준): <b>${dl.rate_pct}%</b> · 15개 산업 중 ${dl.rank}위(높을수록 위험) · 전체 중앙 ${dl.all_median_pct}% · 2017→${dl.year}: ${dl.trend.map(x => x.rate_pct).join(' → ')}%
+               <br><small>${esc(dl.source)}</small></p>` : ''}
+          <p style="margin-top:12px; font-size:12px; color:#94a3b8;">${esc(d.model.note)} · 1단계 F ${d.model.first_stage_F} · ${esc(d.disclaimer)}<br>
+          실제 정답으로 확인된 근거: 상장 소형사 실험에서 재무만 보는 평가의 소형사 오경보율 26.4% vs 대형사 2.5% (규모 편향), 개별 이벤트 신호를 더하면 18.5%로 감소.</p>`;
+    } catch (e) {
+        $('cOut').innerHTML = `<div class="empty">사업 사이트 서버에 연결할 수 없습니다 - <b>python -m sites.biz</b> 실행 후 다시 시도하세요.</div>`;
+    }
+}
+
+loadFeed();
+loadLive(); setTimeout(loadLive, 8000);   // 첫 호출은 반응 통계 로딩으로 늦을 수 있어 한 번 더
+
+</script>
+</body>
+</html>
