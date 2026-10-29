@@ -646,7 +646,16 @@ function survivalCard(s) {
       <small>정보공개서 신설 항목(장기운영 가맹점 비율 · 가맹점 생존율 · 폐점 평균 영업기간)과 같은 모양 · 서울 인허가 · 우리 근사 정의 · ${esc(s.asof)}</small></div><span class="tag kosdaq">실측</span></div>
       <div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th>구분</th><th>영업 중</th><th>장기운영(5년+)</th><th>1년 생존</th><th>3년 생존</th><th>폐점 평균 영업</th></tr></thead><tbody>${rows}</tbody></table></div>
       <p style="margin-top:10px;">가맹점은 3년을 버티는 비율이 독립점보다 높지만, 브랜드끼리는 차이가 크다. 본부가 정보공개서에 생존율을 적기 시작하면 브랜드별로 이 실측과 나란히 대조할 수 있다(이름별 대조는 로컬 전용).</p>
-      <p class="stat">주의 — 개업 연도별 첫해 폐업률이 최근 크게 올랐다: ${trend}. 실제 변화인지 양도(지위승계)·업종 전환이 폐업으로 잡힌 것인지는 아직 가리지 못했다. 한계: 상호 기반 브랜드 추정 · 서울만.</p></div>`;
+      ${transferNote(s.transfer, trend, pc)}</div>`;
+}
+
+/* 10-26 H-2026-10-Z 반영: 독립점 첫해 폐업 원값 옆에 '같은 자리(10m)에서 -30~+180일 안 같은 업종 재개업'을 뺀 조정값 */
+function transferNote(t, trend, pc) {
+    if (!t) return `<p class="stat">주의 — 개업 연도별 첫해 폐업률이 최근 크게 올랐다: ${trend}. 실제 변화인지 양도(지위승계)·업종 전환이 폐업으로 잡힌 것인지는 아직 가리지 못했다. 한계: 상호 기반 브랜드 추정 · 서울만.</p>`;
+    const rows = Object.values(t.industries).map(r => `<tr><td>${esc(r.label)} · 독립 <small>(${esc(r.verdict)})</small></td>` + Object.entries(r.years).filter(([y]) => +y % 2 === 1 || +y >= 2022)
+        .map(([y, v]) => `<td class="mono"><small>${y}</small><br>${pc(v[0])} → <b>${pc(v[1])}</b></td>`).join('') + '</tr>').join('');
+    return `<div class="tablewrap" style="margin-top:8px;"><table><thead><tr><th>개업 연도별 첫해 폐업</th><th colspan="8">원값 → 조정값(같은 자리 즉시 재개업 제외)</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="stat">원값 급등의 대부분은 같은 자리(10m)에서 폐업 -30~+180일 안에 같은 업종이 다시 연 경우다(양도·명의변경 추정, H-2026-10-Z). 이를 빼면 카페는 오히려 줄었고(혼합 판정), 음식점은 실제로 늘었다. 1년 생존율은 조정값을 기준으로 읽는다. 한계: 상호 기반 브랜드 추정 · 서울만 · 즉시 재개업이 모두 양도는 아니다. ${esc(t.asof)}</p>`;
 }
 async function runBrand() {
     const q = $('bq').value.trim();

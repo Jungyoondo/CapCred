@@ -2,10 +2,16 @@
 
 신용캐드(대안 신용평가) → dintel × 신용캐드 → 사업 재설계(10-25) → 정보공개서 에이전트 검정(10-25 밤) → CapCred(10-26)까지, 사업 코드·문서·제출물을 건드린 커밋을 최신순으로 적었다. 가설은 결과 전에 등록한 커밋(Pre-register ...)과 결과 커밋이 따로 있다.
 
-커밋 91개
+커밋 97개
 
 | 날짜 | 커밋 | 내용 |
 |---|---|---|
+| 2026-10-28 | `7664ac7` | CapCred pilot kit for H-2026-10-AH: fdd_agent --anon pseudonymized sample (brand/HQ/reg no./store names/addresses removed, Seoul-only region table), pilot execution doc with message draft and ad-consent caveat (Network Act art. 50), daily scan 10-28 (Robinhood agentic trading controls -> L3 design n |
+| 2026-10-26 | `0d65f3c` | concierge nearby10: note that same-brand count within 500 m is reference only (H-2026-10-AG rejected) |
+| 2026-10-26 | `8c8d67c` | H-2026-10-AG result: rejected - same-brand store within 500 m at opening does not raise transfer-adjusted first-year close within brand x open-year strata (MH OR 1.05 [0.76, 1.46], n=18,380; crude 2.0% vs 1.4% was brand mix); nearby same-brand count stays reference-only in outputs |
+| 2026-10-26 | `65838b9` | User decision 10-26: no voice recording, TTS narration is final (removed from user to-do lists) |
+| 2026-10-26 | `c7cb795` | Survival audit card shows H-2026-10-Z transfer adjustment: independent first-year close rate raw -> adjusted (same-spot reopen within 10 m, -30..+180 days, removed) by open year, verdict per industry; API survival.transfer |
+| 2026-10-26 | `b684e03` | Submission bundle: include AE result and the AF seal ledger + hashed estimates |
 | 2026-10-26 | `ac60528` | Deliverables updated with AE and AF: report test table adds H-2026-10-AE, plan marks the FY2026 seal (334 brands, scoring 2027-10-31) and the FTC industry baseline as done, baseline recipe row mentions national rates, tally 14 tests / 38 hypotheses (19/14/5) in report, brief, README and motion graph |
 | 2026-10-26 | `b6cf653` | H-2026-10-AF sealed: FY2026 FDD Seoul store-count estimates for 334 exact-matched food brands (9-month permit change, 53 alerts: 21 up / 32 down), brands as SHA-256 of normalized names, file hash in scoreboard/caed_fdd_ledger.csv, scoring 2027-10-31; real-name map kept local |
 | 2026-10-26 | `9909a38` | H-2026-10-AE result: Seoul permit franchise close-rate rank vs FTC national industry rates rejected (-0.02; Seoul cafes close more, Seoul Korean-food less than national), open-rate rank holds (0.55), 2019->2024 close-rate direction 5/5 (all rising) -> reports carry the national baseline, Seoul measu |

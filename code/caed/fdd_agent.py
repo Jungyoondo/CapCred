@@ -2,6 +2,7 @@
 
 python -X utf8 -m caed.fdd_agent <브랜드> [--code 072405|072404] [--fy 2025]   # -> data/caed/agent/<브랜드>_FY<연도>.md (로컬 전용)
 python -X utf8 -m caed.fdd_agent --top 2                                        # 카페·음식점에서 서울 매장이 많은 공정위 등록 브랜드 각 N개
+python -X utf8 -m caed.fdd_agent <브랜드> --anon A브랜드                          # 가명 견본(시범 연락용) -> deliverables/business/pilot_sample_FY<연도>.md
 
 누가 쓰나: 가맹거래사(검토·서명·제출은 자격자 - 법제처 17-0355: 정보공개서 작성 자문·등록 대행은 등록 가맹거래사 업무)와,
   자기 정보공개서를 직접 고치는 가맹본부. 이 도구는 공공 기록으로 초안 재료를 모으고 대조 목록을 만드는 데까지만 한다.
@@ -15,6 +16,7 @@ python -X utf8 -m caed.fdd_agent --top 2                                        
   4) 2028-01-01 시행 신설 항목(장기운영 비율·1/3년 생존율·폐점 평균 영업기간) 사전 계산 - caed.survival_audit 정의, 업종 가맹 평균과 비교
   5) 대조 체크리스트
 한계: 서울만 · 상호 기반 브랜드 추정 · 인허가 기준(본사 계약 기준과 다를 수 있음). 결과물은 브랜드 이름이 들어가므로 로컬 전용.
+가명 견본(--anon, 10-28): 브랜드·본부·등록번호·상호·도로명 주소를 지우고 구만 남긴다. 숫자는 실측 그대로라 공개 저장소에 둬도 되는 형태.
 """
 import argparse
 import os
@@ -102,7 +104,7 @@ def survival_items(g, asof):
     return r
 
 
-def report(brand, code, fy, g=None):
+def report(brand, code, fy, g=None, anon=None):
     g = stores(code) if g is None else g
     b = g[g["brand_raw"] == brand].copy()
     if b.empty:
@@ -125,7 +127,12 @@ def report(brand, code, fy, g=None):
     pc = lambda v: "-" if v is None or pd.isna(v) else f"{v:.1%}"  # noqa: E731
     yr = lambda v: "-" if v is None or pd.isna(v) else f"{v:.1f}년"  # noqa: E731
     deadline = (t1 + pd.Timedelta(days=120)).date()
-    L = [f"# 정보공개서 정기변경 보조 리포트 — {brand} · 회계년도 {fy}",
+    shown = hist  # 가명 견본: 표시용 등록 이력만 순번 이름으로(지역별 매장 수 조회는 원래 등록번호로), 명세는 구만
+    if anon:
+        shown = hist.assign(brandNm=[f"{anon}(등록명 {i + 1})" for i in range(len(hist))], brandMnno="BRD_*****", corpNm=anon.replace("브랜드", "본부"),
+                           jngBizStrtDate=hist["jngBizStrtDate"].astype(str).str[:4] + "년")
+    L = [f"# 정보공개서 정기변경 보조 리포트 — {anon or brand} · 회계년도 {fy}",
+         *(["", "> **가명 견본**: 실제 한 브랜드의 공공 기록 숫자 그대로이며, 브랜드·본부·상호·주소만 지웠습니다."] if anon else []),
          "",
          "> 가맹거래사·가맹본부 검토용 초안 재료입니다. 정보공개서 작성 자문·등록 대행이 아니며, 숫자는 서울 인허가 공공 기록 기준입니다(본사 계약 기준과 다를 수 있음).",
          "",
@@ -135,7 +142,7 @@ def report(brand, code, fy, g=None):
          "## 2. 공정위 등록 이력 (정보공개서 브랜드 목록)",
          ("| 기준년도 | 등록 브랜드명 | 브랜드관리번호 | 본부 | 업종 | 가맹사업 개시일 |\n|---|---|---|---|---|---|\n" + "\n".join(
              f"| {r['yr']} | {r['brandNm']} | {r['brandMnno']} | {r['corpNm']} | {r['indutyMlsfcNm']} | {r['jngBizStrtDate']} |"
-             for _, r in hist.head(40).iterrows()))
+             for _, r in shown.head(40).iterrows()))
          if len(hist) else "- 이름이 맞는 등록 브랜드를 찾지 못했습니다(상호 표기 차이 가능 - 브랜드관리번호로 직접 지정 필요).",
          "",
          f"## 3. 서울 매장 변동 ({fy}년, 인허가 실측)",
@@ -152,7 +159,7 @@ def report(brand, code, fy, g=None):
     for nm, s, col in (("신규 개업", new_x, "open"), ("폐업", end_x, "close"), ("명의변경 추정(폐업 쪽)", end_t, "close")):
         L += [f"**{nm} {len(s)}**", "", "| 상호 | 구 | 주소 | 개업일 | 폐업일 |", "|---|---|---|---|---|"]
         day = lambda v: "" if pd.isna(v) else f"{v:%Y-%m-%d}"  # noqa: E731
-        L += [f"| {r['name']} | {r['gu'] or ''} | {r['addr'] or ''} | {day(r['open'])} | {day(r['close'])} |"
+        L += [f"| {f'{anon} 매장' if anon else r['name']} | {r['gu'] or ''} | {'(가림)' if anon else r['addr'] or ''} | {day(r['open'])} | {day(r['close'])} |"
               for _, r in s.sort_values(col).head(60).iterrows()]
         if len(s) > 60:
             L.append(f"| … 외 {len(s) - 60}건 | | | | |")
@@ -166,7 +173,7 @@ def report(brand, code, fy, g=None):
         L += [f"- 공정위 지역별 매장 수에서 {fy - 1}년 신고를 찾지 못했습니다(브랜드관리번호 확인 필요). 예상값은 만들지 않습니다.", ""]
         est = None
     else:
-        top = [c for c in ("전체", "서울", "경기", "인천", "부산") if c in D.columns]
+        top = ["서울"] if anon else [c for c in ("전체", "서울", "경기", "인천", "부산") if c in D.columns]  # 가명 견본은 전국 숫자로 브랜드가 드러나지 않게
         L += ["| 회계년도 | " + " | ".join(top) + " |", "|---" * (len(top) + 1) + "|"]
         L += [f"| {int(y)} | " + " | ".join(f"{int(D.at[y, c])}" for c in top) + " |" for y in D.index[-5:]]
         f0 = float(D.at[fy - 1, "서울"])
@@ -196,8 +203,9 @@ def report(brand, code, fy, g=None):
           "- [ ] 2028년 신설 항목: 위 4절 값과 본사 내부 계산이 크게 다르면 정의 차이를 메모해 둔다.",
           "",
           f"_만든 날 {pd.Timestamp.now():%Y-%m-%d} · caed/fdd_agent.py · 서울 인허가 {LABEL[code]} · 상호 기반 브랜드 추정_"]
-    os.makedirs(OUT, exist_ok=True)
-    path = os.path.join(OUT, f"{F.norm(brand)}_FY{fy}.md")
+    out = os.path.join(ROOT, "deliverables", "business") if anon else OUT
+    os.makedirs(out, exist_ok=True)
+    path = os.path.join(out, f"pilot_sample_FY{fy}.md" if anon else f"{F.norm(brand)}_FY{fy}.md")
     with open(path, "w", encoding="utf-8") as fh:
         fh.write("\n".join(L) + "\n")
     return path, {"brand": brand, "code": code, "fy": fy, "start": int(alive(t0).sum()), "new": len(new_x), "closed": len(end_x),
@@ -210,6 +218,7 @@ def main():
     ap.add_argument("--code", default="072405", choices=list(LABEL))
     ap.add_argument("--fy", type=int, default=pd.Timestamp.now().year - 1)
     ap.add_argument("--top", type=int, default=0)
+    ap.add_argument("--anon", default=None, help="가명(예: A브랜드) - 견본을 deliverables/business에 쓴다")
     a = ap.parse_args()
     if a.top:
         keys = set(F.load()["key"])
@@ -220,7 +229,7 @@ def main():
             for b in picks:
                 print(report(b, code, a.fy, g))
         return
-    print(report(a.brand, a.code, a.fy))
+    print(report(a.brand, a.code, a.fy, anon=a.anon))
 
 
 if __name__ == "__main__":

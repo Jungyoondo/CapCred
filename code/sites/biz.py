@@ -110,6 +110,14 @@ def gym(q):
                                                    for k, v in vals.items()}   # 브랜드 하위 10% / 중앙 / 상위 10%
     except OSError:
         surv = None
+    try:   # 10-26 H-2026-10-Z 양도 착시 보정(caed/survival_audit.py transfer) - 독립점 첫해 폐업 원값 vs 같은 자리 즉시 재개업 제외값
+        tr = rd("survival_transfer.json")
+        if surv is not None:
+            surv["transfer"] = {"asof": tr["asof"], "industries": {c: {"label": r["label"], "verdict": r["verdict"],
+                                "years": {y: [v["y1"], v["adj_y1"]] for y, v in r["years"].items() if v.get("use")}}
+                                for c, r in tr["result"].items()}}
+    except (OSError, KeyError):
+        pass
     return {"ok": True, "asof": ind["asof"], "industries": rows, "franchise": fr, "survival": surv, "I": {"I1": ind["I1"], "I2": ind["I2"], "I3": ind["I3"]},
             "location": locs, "L1": loc["L1"], "L2": loc["L2"], "source": "서울 열린데이터광장 지방행정 인허가(LOCALDATA) · 상권분석서비스"}, 200
 
